@@ -1,7 +1,7 @@
 {
-  "name": "socket",
+  "name": "socket-chat",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
@@ -9,8 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.21.2",
-    "socket.io": "^4.8.1"
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2"
   },
-  "description": ""
+  "description": "",
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
