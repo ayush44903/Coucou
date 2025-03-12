@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Socket.IO Chat</title>
+    <style>
+        body { margin: 0; padding-bottom: 3rem; font-family: Arial, sans-serif; }
+        #messages { list-style-type: none; margin: 0; padding: 0; }
+        #messages li { padding: 0.5rem 1rem; }
+        #messages .system { color: #666; font-style: italic; }
+        #messages .message { padding: 8px; margin: 4px 0; }
+        #online-users { position: fixed; right: 0; top: 0; width: 200px; background: #f0f0f0; padding: 1rem; }
+        #form { background: #333; padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; }
+        #input { border: none; padding: 0.5rem; flex-grow: 1; margin: 0.25rem; border-radius: 3px; }
+        #form button { background: #09f; color: white; border: none; padding: 0.5rem 1rem; margin: 0.25rem; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div id="online-users">
+        <h3>Online Users</h3>
+        <ul id="users-list"></ul>
+    </div>
+    <ul id="messages"></ul>
+    <form id="form">
+        <input id="input" autocomplete="off" placeholder="Type a message..." />
+        <button>Send</button>
+    </form>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+        const messages = document.getElementById('messages');
+        const usersList = document.getElementById('users-list');
+
+        // Join with username
+        const username = prompt('Enter your username:') || '';
+        socket.emit('join', username);
+
+        // Handle form submission
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (input.value) {
+                socket.emit('chat message', input.value);
+                input.value = '';
+            }
+        });
+
+        // Handle incoming messages
+        socket.on('chat message', (data) => {
+            const item = document.createElement('li');
+            item.className = 'message';
+            const time = new Date(data.timestamp).toLocaleTimeString();
+            item.textContent = `[${time}] ${data.username}: ${data.message}`;
+            messages.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+
+        // Handle user joined notification
+        socket.on('user joined', (data) => {
+            addSystemMessage(`${data.username} joined the chat`);
+            updateUsersList(data.onlineUsers);
+        });
+
+        // Handle user left notification
+        socket.on('user left', (data) => {
+            addSystemMessage(`${data.username} left the chat`);
+            updateUsersList(data.onlineUsers);
+        });
+
+        function addSystemMessage(message) {
+            const item = document.createElement('li');
+            item.className = 'system';
+            item.textContent = message;
+            messages.appendChild(item);
+        }
+
+        function updateUsersList(users) {
+            usersList.innerHTML = users
+                .map(user => `<li>${user}</li>`)
+                .join('');
+        }
+
+        socket.on('error', (errorMsg) => {
+            console.error('Server error:', errorMsg);
+            addSystemMessage(`Error: ${errorMsg}`);
+        });
+    </script>
+</body>
+</html>
