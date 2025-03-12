@@ -3,7 +3,7 @@ const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http, {
     cors: {
-        origin: ["https://socketexample-production.up.railway.app", "http://localhost:3000"],
+        origin: "*",  // Allow all origins in development. In production, specify your domain
         methods: ["GET", "POST"],
         credentials: true
     }

@@ -27,12 +27,8 @@
 
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script>
-        const socketURL = window.location.hostname === 'localhost' 
-            ? 'http://localhost:3000' 
-            : 'https://socketexample-production.up.railway.app';
-            
-        const socket = io(socketURL, {
-            withCredentials: true,
+        // Automatically detect the server URL based on the current location
+        const socket = io(window.location.origin, {
             transports: ['websocket', 'polling']
         });
 
@@ -44,6 +40,17 @@
         // Join with username
         const username = prompt('Enter your username:') || '';
         socket.emit('join', username);
+
+        // Add this after socket initialization
+        socket.on('connect', () => {
+            console.log('Connected to server');
+            addSystemMessage('Connected to chat');
+        });
+
+        socket.on('connect_error', (error) => {
+            console.error('Connection error:', error);
+            addSystemMessage('Connection error: ' + error.message);
+        });
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
