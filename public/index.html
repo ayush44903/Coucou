@@ -27,9 +27,15 @@
 
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script>
-        // Automatically detect the server URL based on the current location
-        const socket = io(window.location.origin, {
-            transports: ['websocket', 'polling']
+        // Replace the existing socket initialization with this:
+        const socketURL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3000' 
+            : 'https://socketexample-production.up.railway.app';
+        
+        const socket = io(socketURL, {
+            transports: ['websocket', 'polling'],
+            reconnectionAttempts: 5,
+            timeout: 10000
         });
 
         const form = document.getElementById('form');
