@@ -1,7 +1,13 @@
 const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
-const io = require('socket.io')(http);
+const io = require('socket.io')(http, {
+    cors: {
+        origin: ["https://socketexample-production.up.railway.app", "http://localhost:3000"],
+        methods: ["GET", "POST"],
+        credentials: true
+    }
+});
 
 // Serve static files from public directory
 app.use(express.static('public'));

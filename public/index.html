@@ -25,9 +25,17 @@
         <button>Send</button>
     </form>
 
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script>
-        const socket = io();
+        const socketURL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3000' 
+            : 'https://socketexample-production.up.railway.app';
+            
+        const socket = io(socketURL, {
+            withCredentials: true,
+            transports: ['websocket', 'polling']
+        });
+
         const form = document.getElementById('form');
         const input = document.getElementById('input');
         const messages = document.getElementById('messages');
@@ -37,7 +45,6 @@
         const username = prompt('Enter your username:') || '';
         socket.emit('join', username);
 
-        // Handle form submission
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             if (input.value) {
@@ -46,27 +53,28 @@
             }
         });
 
-        // Handle incoming messages
         socket.on('chat message', (data) => {
+            addMessage(data);
+        });
+
+        socket.on('user joined', (data) => {
+            addSystemMessage(`${data.username} joined the chat`);
+            updateUsersList(data.onlineUsers);
+        });
+
+        socket.on('user left', (data) => {
+            addSystemMessage(`${data.username} left the chat`);
+            updateUsersList(data.onlineUsers);
+        });
+
+        function addMessage(data) {
             const item = document.createElement('li');
             item.className = 'message';
             const time = new Date(data.timestamp).toLocaleTimeString();
             item.textContent = `[${time}] ${data.username}: ${data.message}`;
             messages.appendChild(item);
             window.scrollTo(0, document.body.scrollHeight);
-        });
-
-        // Handle user joined notification
-        socket.on('user joined', (data) => {
-            addSystemMessage(`${data.username} joined the chat`);
-            updateUsersList(data.onlineUsers);
-        });
-
-        // Handle user left notification
-        socket.on('user left', (data) => {
-            addSystemMessage(`${data.username} left the chat`);
-            updateUsersList(data.onlineUsers);
-        });
+        }
 
         function addSystemMessage(message) {
             const item = document.createElement('li');
@@ -80,11 +88,6 @@
                 .map(user => `<li>${user}</li>`)
                 .join('');
         }
-
-        socket.on('error', (errorMsg) => {
-            console.error('Server error:', errorMsg);
-            addSystemMessage(`Error: ${errorMsg}`);
-        });
     </script>
 </body>
 </html>
