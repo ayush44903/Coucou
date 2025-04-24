@@ -8,26 +8,75 @@
         #messages li { padding: 0.5rem 1rem; }
         #messages .system { color: #666; font-style: italic; }
         #messages .message { padding: 8px; margin: 4px 0; }
-        #online-users { position: fixed; right: 0; top: 0; width: 200px; background: #f0f0f0; padding: 1rem; }
+        #messages .room-message { background-color: #e3f2fd; }
+        #online-users { position: fixed; right: 0; top: 0; width: 200px; background: #f0f0f0; padding: 1rem; height: calc(50% - 2rem); overflow-y: auto; }
+        #rooms-panel { position: fixed; right: 0; bottom: 3rem; top: 50%; width: 200px; background: #f0f0f0; padding: 1rem; overflow-y: auto; }
         #form { background: #333; padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; }
         #input { border: none; padding: 0.5rem; flex-grow: 1; margin: 0.25rem; border-radius: 3px; }
         #form button { background: #09f; color: white; border: none; padding: 0.5rem 1rem; margin: 0.25rem; border-radius: 3px; }
+        
+        .room-controls { margin-top: 10px; }
+        .room-controls input { width: 100%; padding: 5px; margin-bottom: 5px; box-sizing: border-box; }
+        .room-controls button { background: #09f; color: white; border: none; padding: 5px; border-radius: 3px; cursor: pointer; }
+        .room-list { margin-top: 10px; }
+        .room-item { padding: 8px; margin: 5px 0; background: white; border-radius: 3px; cursor: pointer; }
+        .room-item:hover { background: #e0e0e0; }
+        .room-item .name { font-weight: bold; }
+        .room-item .members { font-size: 12px; color: #666; }
+        .current-room { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #ddd; margin-bottom: 10px; }
+        .dialog-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; z-index: 100; }
+        .dialog { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 5px; z-index: 101; display: none; width: 300px; }
+        .dialog h3 { margin-top: 0; }
+        .dialog-form input { width: 100%; padding: 8px; margin: 5px 0; box-sizing: border-box; }
+        .dialog-buttons { text-align: right; margin-top: 15px; }
+        .dialog-buttons button { margin-left: 10px; padding: 5px 15px; }
+        .room-tag { background: #e3f2fd; color: #0d47a1; padding: 2px 6px; border-radius: 10px; font-size: 12px; display: inline-block; margin-left: 5px; }
     </style>
 </head>
 <body>
+    <div class="current-room">
+        <div>Current Room: <span id="current-room-name">Lobby</span></div>
+        <button id="leave-room-btn" style="display: none;">Leave Room</button>
+    </div>
+
     <div id="online-users">
         <h3>Online Users</h3>
         <ul id="users-list"></ul>
     </div>
+
+    <div id="rooms-panel">
+        <h3>Chat Rooms</h3>
+        <div class="room-controls">
+            <input type="text" id="room-name" placeholder="Room name" />
+            <input type="password" id="room-code" placeholder="Secret code" />
+            <button id="create-room-btn">Create Room</button>
+        </div>
+        <div class="room-list" id="rooms-list"></div>
+    </div>
+
     <ul id="messages"></ul>
     <form id="form">
         <input id="input" autocomplete="off" placeholder="Type a message..." />
         <button>Send</button>
     </form>
 
+    <div class="dialog-overlay" id="join-overlay"></div>
+    <div class="dialog" id="join-dialog">
+        <h3>Join Room</h3>
+        <div class="dialog-form">
+            <div>Room: <span id="join-room-name"></span></div>
+            <input type="password" id="join-room-code" placeholder="Enter secret code" />
+            <input type="hidden" id="join-room-id" />
+        </div>
+        <div class="dialog-buttons">
+            <button id="join-cancel">Cancel</button>
+            <button id="join-confirm">Join</button>
+        </div>
+    </div>
+
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script>
-        // Replace the existing socket initialization with this:
+        // Socket connection
         const socketURL = window.location.hostname === 'localhost' 
             ? 'http://localhost:3000' 
             : 'https://socketexample-production.up.railway.app';
@@ -38,19 +87,42 @@
             timeout: 10000
         });
 
+        // DOM elements
         const form = document.getElementById('form');
         const input = document.getElementById('input');
         const messages = document.getElementById('messages');
         const usersList = document.getElementById('users-list');
+        const roomsList = document.getElementById('rooms-list');
+        const roomNameInput = document.getElementById('room-name');
+        const roomCodeInput = document.getElementById('room-code');
+        const createRoomBtn = document.getElementById('create-room-btn');
+        const currentRoomName = document.getElementById('current-room-name');
+        const leaveRoomBtn = document.getElementById('leave-room-btn');
+        
+        // Dialog elements
+        const joinDialog = document.getElementById('join-dialog');
+        const joinOverlay = document.getElementById('join-overlay');
+        const joinRoomName = document.getElementById('join-room-name');
+        const joinRoomCode = document.getElementById('join-room-code');
+        const joinRoomId = document.getElementById('join-room-id');
+        const joinCancel = document.getElementById('join-cancel');
+        const joinConfirm = document.getElementById('join-confirm');
+
+        // App state
+        let currentUser = '';
+        let currentRoom = 'lobby';
 
         // Join with username
         const username = prompt('Enter your username:') || '';
+        currentUser = username;
         socket.emit('join', username);
 
         // Add this after socket initialization
         socket.on('connect', () => {
             console.log('Connected to server');
             addSystemMessage('Connected to chat');
+            // Request rooms list when connected
+            socket.emit('get rooms');
         });
 
         socket.on('connect_error', (error) => {
@@ -58,16 +130,75 @@
             addSystemMessage('Connection error: ' + error.message);
         });
 
+        // Send message handler
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             if (input.value) {
-                socket.emit('chat message', input.value);
+                if (currentRoom === 'lobby') {
+                    socket.emit('chat message', input.value);
+                } else {
+                    socket.emit('room message', {
+                        roomId: currentRoom,
+                        message: input.value
+                    });
+                }
                 input.value = '';
             }
         });
 
+        // Create room handler
+        createRoomBtn.addEventListener('click', () => {
+            const roomName = roomNameInput.value.trim();
+            const secretCode = roomCodeInput.value.trim();
+            
+            if (roomName && secretCode) {
+                socket.emit('create room', { roomName, secretCode });
+                roomNameInput.value = '';
+                roomCodeInput.value = '';
+            } else {
+                alert('Please enter both room name and secret code');
+            }
+        });
+
+        // Leave room handler
+        leaveRoomBtn.addEventListener('click', () => {
+            if (currentRoom !== 'lobby') {
+                socket.emit('leave room', currentRoom);
+            }
+        });
+
+        // Room join dialog handlers
+        joinCancel.addEventListener('click', () => {
+            joinDialog.style.display = 'none';
+            joinOverlay.style.display = 'none';
+        });
+
+        joinConfirm.addEventListener('click', () => {
+            const roomId = joinRoomId.value;
+            const secretCode = joinRoomCode.value.trim();
+            
+            if (secretCode) {
+                socket.emit('join room', { roomId, secretCode });
+                joinDialog.style.display = 'none';
+                joinOverlay.style.display = 'none';
+            } else {
+                alert('Please enter the secret code');
+            }
+        });
+
+        // Socket event listeners
         socket.on('chat message', (data) => {
-            addMessage(data);
+            // Only show messages from the lobby when we're in the lobby
+            if (currentRoom === 'lobby') {
+                addMessage(data);
+            }
+        });
+
+        socket.on('room message', (data) => {
+            // Only show messages from our current room
+            if (currentRoom === data.roomId) {
+                addRoomMessage(data);
+            }
         });
 
         socket.on('user joined', (data) => {
@@ -80,6 +211,49 @@
             updateUsersList(data.onlineUsers);
         });
 
+        socket.on('rooms list', (roomsData) => {
+            updateRoomsList(roomsData);
+        });
+
+        socket.on('rooms update', (roomsData) => {
+            updateRoomsList(roomsData);
+        });
+
+        socket.on('room created', (data) => {
+            currentRoom = data.roomId;
+            updateCurrentRoom(data.name, true);
+            addSystemMessage(`You created room: ${data.name}`);
+        });
+
+        socket.on('room joined', (data) => {
+            currentRoom = data.roomId;
+            updateCurrentRoom(data.name, true);
+            addSystemMessage(`You joined room: ${data.name}`);
+        });
+
+        socket.on('room left', (data) => {
+            currentRoom = 'lobby';
+            updateCurrentRoom('Lobby', false);
+            addSystemMessage('You left the room');
+        });
+
+        socket.on('user joined room', (data) => {
+            if (currentRoom === data.roomId) {
+                addSystemMessage(`${data.username} joined this room`);
+            }
+        });
+
+        socket.on('user left room', (data) => {
+            if (currentRoom === data.roomId) {
+                addSystemMessage(`${data.username} left this room`);
+            }
+        });
+
+        socket.on('room error', (errorMsg) => {
+            addSystemMessage(`Error: ${errorMsg}`);
+        });
+
+        // Helper functions
         function addMessage(data) {
             const item = document.createElement('li');
             item.className = 'message';
@@ -89,17 +263,61 @@
             window.scrollTo(0, document.body.scrollHeight);
         }
 
+        function addRoomMessage(data) {
+            const item = document.createElement('li');
+            item.className = 'message room-message';
+            const time = new Date(data.timestamp).toLocaleTimeString();
+            item.innerHTML = `[${time}] ${data.username}: ${data.message} <span class="room-tag">${data.roomName}</span>`;
+            messages.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
         function addSystemMessage(message) {
             const item = document.createElement('li');
             item.className = 'system';
             item.textContent = message;
             messages.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
         }
 
         function updateUsersList(users) {
             usersList.innerHTML = users
                 .map(user => `<li>${user}</li>`)
                 .join('');
+        }
+
+        function updateRoomsList(rooms) {
+            roomsList.innerHTML = '';
+            rooms.forEach(room => {
+                const roomElement = document.createElement('div');
+                roomElement.className = 'room-item';
+                roomElement.innerHTML = `
+                    <div class="name">${room.name}</div>
+                    <div class="members">${room.memberCount} ${room.memberCount === 1 ? 'member' : 'members'}</div>
+                `;
+                roomElement.addEventListener('click', () => {
+                    openJoinDialog(room.id, room.name);
+                });
+                roomsList.appendChild(roomElement);
+            });
+        }
+
+        function openJoinDialog(roomId, roomName) {
+            joinRoomName.textContent = roomName;
+            joinRoomId.value = roomId;
+            joinRoomCode.value = '';
+            joinDialog.style.display = 'block';
+            joinOverlay.style.display = 'block';
+            joinRoomCode.focus();
+        }
+
+        function updateCurrentRoom(name, isRoom) {
+            currentRoomName.textContent = name;
+            if (isRoom) {
+                leaveRoomBtn.style.display = 'inline-block';
+            } else {
+                leaveRoomBtn.style.display = 'none';
+            }
         }
     </script>
 </body>
