@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Socket Chat</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f7f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      width: 100%;
+      max-width: 450px;
+      padding: 20px;
+    }
+    .auth-container {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+      color: #4a5568;
+      margin-bottom: 1.5rem;
+    }
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 0.75rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: #718096;
+    }
+    .auth-tab.active {
+      color: #4299e1;
+      border-bottom: 2px solid #4299e1;
+    }
+    .auth-panel {
+      display: none;
+    }
+    .auth-panel.active {
+      display: block;
+    }
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #4a5568;
+    }
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    .btn {
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .btn-primary {
+      background-color: #4299e1;
+      color: white;
+    }
+    .btn-primary:hover {
+      background-color: #3182ce;
+    }
+    .error-message {
+      color: #e53e3e;
+      text-align: center;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      background-color: #fff5f5;
+      border-radius: 4px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="auth-container">
+      <h1>Welcome to Socket Chat</h1>
+      
+      <!-- Error message container -->
+      <div class="error-message" id="error-message"></div>
+      
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Login</button>
+        <button class="auth-tab" data-tab="signup">Sign Up</button>
+      </div>
+      
+      <div id="login-panel" class="auth-panel active">
+        <form id="login-form">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+      </div>
+      
+      <div id="signup-panel" class="auth-panel">
+        <form id="signup-form">
+          <div class="form-group">
+            <label for="signup-email">Email</label>
+            <input type="email" id="signup-email" required>
+          </div>
+          <div class="form-group">
+            <label for="signup-password">Password</label>
+            <input type="password" id="signup-password" required minlength="6">
+          </div>
+          <button type="submit" class="btn btn-primary">Sign Up</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  
+  <!-- Your scripts -->
+  <script src="login.js"></script>
+  <script>
+    // Tab switching functionality
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabs = document.querySelectorAll('.auth-tab');
+      const panels = document.querySelectorAll('.auth-panel');
+      
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          // Hide error message when switching tabs
+          const errorMessage = document.querySelector('.error-message');
+          if (errorMessage) {
+            errorMessage.style.display = 'none';
+          }
+          
+          // Deactivate all tabs and panels
+          tabs.forEach(t => t.classList.remove('active'));
+          panels.forEach(p => p.classList.remove('active'));
+          
+          // Activate the clicked tab and corresponding panel
+          tab.classList.add('active');
+          const panelId = tab.dataset.tab + '-panel';
+          document.getElementById(panelId).classList.add('active');
+        });
+      });
+    });
+  </script>
+</body>
+</html>

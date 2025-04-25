@@ -57,18 +57,51 @@ app.post('/api/login', async (req, res) => {
       return res.status(400).json({ error: 'ID token is required' });
     }
     
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
-    const user = {
-      uid: decodedToken.uid,
-      email: decodedToken.email,
-      name: decodedToken.name || decodedToken.email
-    };
-    
-    req.session.user = user;
-    res.status(200).json({ message: 'Login successful', user });
+    // Add more detailed error logging
+    try {
+      const decodedToken = await admin.auth().verifyIdToken(idToken);
+      
+      // Check if decodedToken contains necessary user information
+      if (!decodedToken.uid) {
+        console.error('Firebase returned token without user ID');
+        return res.status(400).json({ error: 'Invalid user information' });
+      }
+      
+      const user = {
+        uid: decodedToken.uid,
+        email: decodedToken.email,
+        name: decodedToken.name || decodedToken.email || decodedToken.displayName || 'User'
+      };
+      
+      // Ensure session is correctly initialized before updating
+      if (!req.session) {
+        console.error('Session object not available');
+        return res.status(500).json({ error: 'Session initialization failed' });
+      }
+      
+      req.session.user = user;
+      
+      // Ensure session is properly saved before responding
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.status(500).json({ error: 'Failed to save session data' });
+        }
+        res.status(200).json({ message: 'Login successful', user });
+      });
+    } catch (authError) {
+      console.error('Firebase auth error:', authError);
+      if (authError.code === 'auth/id-token-expired') {
+        return res.status(401).json({ error: 'Token expired. Please login again.' });
+      } else if (authError.code === 'auth/argument-error') {
+        return res.status(400).json({ error: 'Invalid token format' });
+      } else {
+        return res.status(401).json({ error: 'Authentication failed: ' + authError.message });
+      }
+    }
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(401).json({ error: 'Authentication failed' });
+    console.error('Login error details:', error.stack || error);
+    res.status(500).json({ error: 'Server error during authentication: ' + (error.message || 'Unknown error') });
   }
 });
 

@@ -37,6 +37,7 @@
     <div class="current-room">
         <div>Current Room: <span id="current-room-name">Lobby</span></div>
         <button id="leave-room-btn" style="display: none;">Leave Room</button>
+        <button id="logout-btn" style="margin-left: 10px;">Logout</button>
     </div>
 
     <div id="online-users">
@@ -75,248 +76,295 @@
     </div>
 
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script>
-        // Socket connection
-        const socketURL = window.location.hostname === 'localhost' 
-            ? 'http://localhost:3000' 
-            : 'https://socketexample-production.up.railway.app';
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCtdd5NKT5qkEg4o3xayWB2IigPpZZNwd0",
+            authDomain: "coucou-91d2b.firebaseapp.com",
+            projectId: "coucou-91d2b",
+            storageBucket: "coucou-91d2b.firebasestorage.app",
+            messagingSenderId: "744963442569",
+            appId: "1:744963442569:web:a384d80787ad3f95628358",
+            measurementId: "G-WNDTLBBEY7"
+        };
         
-        const socket = io(socketURL, {
-            transports: ['websocket', 'polling'],
-            reconnectionAttempts: 5,
-            timeout: 10000
-        });
-
-        // DOM elements
-        const form = document.getElementById('form');
-        const input = document.getElementById('input');
-        const messages = document.getElementById('messages');
-        const usersList = document.getElementById('users-list');
-        const roomsList = document.getElementById('rooms-list');
-        const roomNameInput = document.getElementById('room-name');
-        const roomCodeInput = document.getElementById('room-code');
-        const createRoomBtn = document.getElementById('create-room-btn');
-        const currentRoomName = document.getElementById('current-room-name');
-        const leaveRoomBtn = document.getElementById('leave-room-btn');
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
         
-        // Dialog elements
-        const joinDialog = document.getElementById('join-dialog');
-        const joinOverlay = document.getElementById('join-overlay');
-        const joinRoomName = document.getElementById('join-room-name');
-        const joinRoomCode = document.getElementById('join-room-code');
-        const joinRoomId = document.getElementById('join-room-id');
-        const joinCancel = document.getElementById('join-cancel');
-        const joinConfirm = document.getElementById('join-confirm');
-
-        // App state
-        let currentUser = '';
-        let currentRoom = 'lobby';
-
-        // Join with username
-        const username = prompt('Enter your username:') || '';
-        currentUser = username;
-        socket.emit('join', username);
-
-        // Add this after socket initialization
-        socket.on('connect', () => {
-            console.log('Connected to server');
-            addSystemMessage('Connected to chat');
-            // Request rooms list when connected
-            socket.emit('get rooms');
-        });
-
-        socket.on('connect_error', (error) => {
-            console.error('Connection error:', error);
-            addSystemMessage('Connection error: ' + error.message);
-        });
-
-        // Send message handler
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            if (input.value) {
-                if (currentRoom === 'lobby') {
-                    socket.emit('chat message', input.value);
-                } else {
-                    socket.emit('room message', {
-                        roomId: currentRoom,
-                        message: input.value
-                    });
-                }
-                input.value = '';
-            }
-        });
-
-        // Create room handler
-        createRoomBtn.addEventListener('click', () => {
-            const roomName = roomNameInput.value.trim();
-            const secretCode = roomCodeInput.value.trim();
-            
-            if (roomName && secretCode) {
-                socket.emit('create room', { roomName, secretCode });
-                roomNameInput.value = '';
-                roomCodeInput.value = '';
+        // Check authentication
+        firebase.auth().onAuthStateChanged((user) => {
+            if (!user) {
+                // Not logged in, redirect to login page
+                window.location.href = '/login.html';
             } else {
-                alert('Please enter both room name and secret code');
+                // User is logged in, initialize the chat
+                initializeChat(user);
             }
         });
 
-        // Leave room handler
-        leaveRoomBtn.addEventListener('click', () => {
-            if (currentRoom !== 'lobby') {
-                socket.emit('leave room', currentRoom);
-            }
+        // Add logout functionality
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            fetch('/api/logout', {
+                method: 'POST'
+            }).then(() => {
+                firebase.auth().signOut().then(() => {
+                    window.location.href = '/login.html';
+                });
+            });
         });
 
-        // Room join dialog handlers
-        joinCancel.addEventListener('click', () => {
-            joinDialog.style.display = 'none';
-            joinOverlay.style.display = 'none';
-        });
-
-        joinConfirm.addEventListener('click', () => {
-            const roomId = joinRoomId.value;
-            const secretCode = joinRoomCode.value.trim();
+        // Socket connection
+        function initializeChat(user) {
+            const socketURL = window.location.hostname === 'localhost' 
+                ? 'http://localhost:3000' 
+                : 'https://socketexample-production.up.railway.app';
             
-            if (secretCode) {
-                socket.emit('join room', { roomId, secretCode });
+            const socket = io(socketURL, {
+                transports: ['websocket', 'polling'],
+                reconnectionAttempts: 5,
+                timeout: 10000,
+                auth: {
+                    token: null // Will be set after getting the token
+                }
+            });
+
+            // Get Firebase token for socket.io authentication
+            user.getIdToken().then((token) => {
+                socket.auth = { token };
+                socket.connect();
+            });
+
+            // DOM elements
+            const form = document.getElementById('form');
+            const input = document.getElementById('input');
+            const messages = document.getElementById('messages');
+            const usersList = document.getElementById('users-list');
+            const roomsList = document.getElementById('rooms-list');
+            const roomNameInput = document.getElementById('room-name');
+            const roomCodeInput = document.getElementById('room-code');
+            const createRoomBtn = document.getElementById('create-room-btn');
+            const currentRoomName = document.getElementById('current-room-name');
+            const leaveRoomBtn = document.getElementById('leave-room-btn');
+            
+            // Dialog elements
+            const joinDialog = document.getElementById('join-dialog');
+            const joinOverlay = document.getElementById('join-overlay');
+            const joinRoomName = document.getElementById('join-room-name');
+            const joinRoomCode = document.getElementById('join-room-code');
+            const joinRoomId = document.getElementById('join-room-id');
+            const joinCancel = document.getElementById('join-cancel');
+            const joinConfirm = document.getElementById('join-confirm');
+
+            // App state
+            let currentUser = user.displayName || user.email || 'User';
+            let currentRoom = 'lobby';
+
+            // Initialize the chat connection
+            socket.on('connect', () => {
+                console.log('Connected to server');
+                addSystemMessage('Connected to chat');
+                // Join with user from Firebase
+                socket.emit('join');
+                // Request rooms list when connected
+                socket.emit('get rooms');
+            });
+
+            socket.on('connect_error', (error) => {
+                console.error('Connection error:', error);
+                addSystemMessage('Connection error: ' + error.message);
+            });
+
+            // Send message handler
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (input.value) {
+                    if (currentRoom === 'lobby') {
+                        socket.emit('chat message', input.value);
+                    } else {
+                        socket.emit('room message', {
+                            roomId: currentRoom,
+                            message: input.value
+                        });
+                    }
+                    input.value = '';
+                }
+            });
+
+            // Create room handler
+            createRoomBtn.addEventListener('click', () => {
+                const roomName = roomNameInput.value.trim();
+                const secretCode = roomCodeInput.value.trim();
+                
+                if (roomName && secretCode) {
+                    socket.emit('create room', { roomName, secretCode });
+                    roomNameInput.value = '';
+                    roomCodeInput.value = '';
+                } else {
+                    alert('Please enter both room name and secret code');
+                }
+            });
+
+            // Leave room handler
+            leaveRoomBtn.addEventListener('click', () => {
+                if (currentRoom !== 'lobby') {
+                    socket.emit('leave room', currentRoom);
+                }
+            });
+
+            // Room join dialog handlers
+            joinCancel.addEventListener('click', () => {
                 joinDialog.style.display = 'none';
                 joinOverlay.style.display = 'none';
-            } else {
-                alert('Please enter the secret code');
-            }
-        });
-
-        // Socket event listeners
-        socket.on('chat message', (data) => {
-            // Only show messages from the lobby when we're in the lobby
-            if (currentRoom === 'lobby') {
-                addMessage(data);
-            }
-        });
-
-        socket.on('room message', (data) => {
-            // Only show messages from our current room
-            if (currentRoom === data.roomId) {
-                addRoomMessage(data);
-            }
-        });
-
-        socket.on('user joined', (data) => {
-            addSystemMessage(`${data.username} joined the chat`);
-            updateUsersList(data.onlineUsers);
-        });
-
-        socket.on('user left', (data) => {
-            addSystemMessage(`${data.username} left the chat`);
-            updateUsersList(data.onlineUsers);
-        });
-
-        socket.on('rooms list', (roomsData) => {
-            updateRoomsList(roomsData);
-        });
-
-        socket.on('rooms update', (roomsData) => {
-            updateRoomsList(roomsData);
-        });
-
-        socket.on('room created', (data) => {
-            currentRoom = data.roomId;
-            updateCurrentRoom(data.name, true);
-            addSystemMessage(`You created room: ${data.name}`);
-        });
-
-        socket.on('room joined', (data) => {
-            currentRoom = data.roomId;
-            updateCurrentRoom(data.name, true);
-            addSystemMessage(`You joined room: ${data.name}`);
-        });
-
-        socket.on('room left', (data) => {
-            currentRoom = 'lobby';
-            updateCurrentRoom('Lobby', false);
-            addSystemMessage('You left the room');
-        });
-
-        socket.on('user joined room', (data) => {
-            if (currentRoom === data.roomId) {
-                addSystemMessage(`${data.username} joined this room`);
-            }
-        });
-
-        socket.on('user left room', (data) => {
-            if (currentRoom === data.roomId) {
-                addSystemMessage(`${data.username} left this room`);
-            }
-        });
-
-        socket.on('room error', (errorMsg) => {
-            addSystemMessage(`Error: ${errorMsg}`);
-        });
-
-        // Helper functions
-        function addMessage(data) {
-            const item = document.createElement('li');
-            item.className = 'message';
-            const time = new Date(data.timestamp).toLocaleTimeString();
-            item.textContent = `[${time}] ${data.username}: ${data.message}`;
-            messages.appendChild(item);
-            window.scrollTo(0, document.body.scrollHeight);
-        }
-
-        function addRoomMessage(data) {
-            const item = document.createElement('li');
-            item.className = 'message room-message';
-            const time = new Date(data.timestamp).toLocaleTimeString();
-            item.innerHTML = `[${time}] ${data.username}: ${data.message} <span class="room-tag">${data.roomName}</span>`;
-            messages.appendChild(item);
-            window.scrollTo(0, document.body.scrollHeight);
-        }
-
-        function addSystemMessage(message) {
-            const item = document.createElement('li');
-            item.className = 'system';
-            item.textContent = message;
-            messages.appendChild(item);
-            window.scrollTo(0, document.body.scrollHeight);
-        }
-
-        function updateUsersList(users) {
-            usersList.innerHTML = users
-                .map(user => `<li>${user}</li>`)
-                .join('');
-        }
-
-        function updateRoomsList(rooms) {
-            roomsList.innerHTML = '';
-            rooms.forEach(room => {
-                const roomElement = document.createElement('div');
-                roomElement.className = 'room-item';
-                roomElement.innerHTML = `
-                    <div class="name">${room.name}</div>
-                    <div class="members">${room.memberCount} ${room.memberCount === 1 ? 'member' : 'members'}</div>
-                `;
-                roomElement.addEventListener('click', () => {
-                    openJoinDialog(room.id, room.name);
-                });
-                roomsList.appendChild(roomElement);
             });
-        }
 
-        function openJoinDialog(roomId, roomName) {
-            joinRoomName.textContent = roomName;
-            joinRoomId.value = roomId;
-            joinRoomCode.value = '';
-            joinDialog.style.display = 'block';
-            joinOverlay.style.display = 'block';
-            joinRoomCode.focus();
-        }
+            joinConfirm.addEventListener('click', () => {
+                const roomId = joinRoomId.value;
+                const secretCode = joinRoomCode.value.trim();
+                
+                if (secretCode) {
+                    socket.emit('join room', { roomId, secretCode });
+                    joinDialog.style.display = 'none';
+                    joinOverlay.style.display = 'none';
+                } else {
+                    alert('Please enter the secret code');
+                }
+            });
 
-        function updateCurrentRoom(name, isRoom) {
-            currentRoomName.textContent = name;
-            if (isRoom) {
-                leaveRoomBtn.style.display = 'inline-block';
-            } else {
-                leaveRoomBtn.style.display = 'none';
+            // Socket event listeners
+            socket.on('chat message', (data) => {
+                // Only show messages from the lobby when we're in the lobby
+                if (currentRoom === 'lobby') {
+                    addMessage(data);
+                }
+            });
+
+            socket.on('room message', (data) => {
+                // Only show messages from our current room
+                if (currentRoom === data.roomId) {
+                    addRoomMessage(data);
+                }
+            });
+
+            socket.on('user joined', (data) => {
+                addSystemMessage(`${data.username} joined the chat`);
+                updateUsersList(data.onlineUsers);
+            });
+
+            socket.on('user left', (data) => {
+                addSystemMessage(`${data.username} left the chat`);
+                updateUsersList(data.onlineUsers);
+            });
+
+            socket.on('rooms list', (roomsData) => {
+                updateRoomsList(roomsData);
+            });
+
+            socket.on('rooms update', (roomsData) => {
+                updateRoomsList(roomsData);
+            });
+
+            socket.on('room created', (data) => {
+                currentRoom = data.roomId;
+                updateCurrentRoom(data.name, true);
+                addSystemMessage(`You created room: ${data.name}`);
+            });
+
+            socket.on('room joined', (data) => {
+                currentRoom = data.roomId;
+                updateCurrentRoom(data.name, true);
+                addSystemMessage(`You joined room: ${data.name}`);
+            });
+
+            socket.on('room left', (data) => {
+                currentRoom = 'lobby';
+                updateCurrentRoom('Lobby', false);
+                addSystemMessage('You left the room');
+            });
+
+            socket.on('user joined room', (data) => {
+                if (currentRoom === data.roomId) {
+                    addSystemMessage(`${data.username} joined this room`);
+                }
+            });
+
+            socket.on('user left room', (data) => {
+                if (currentRoom === data.roomId) {
+                    addSystemMessage(`${data.username} left this room`);
+                }
+            });
+
+            socket.on('room error', (errorMsg) => {
+                addSystemMessage(`Error: ${errorMsg}`);
+            });
+
+            // Helper functions
+            function addMessage(data) {
+                const item = document.createElement('li');
+                item.className = 'message';
+                const time = new Date(data.timestamp).toLocaleTimeString();
+                item.textContent = `[${time}] ${data.username}: ${data.message}`;
+                messages.appendChild(item);
+                window.scrollTo(0, document.body.scrollHeight);
+            }
+
+            function addRoomMessage(data) {
+                const item = document.createElement('li');
+                item.className = 'message room-message';
+                const time = new Date(data.timestamp).toLocaleTimeString();
+                item.innerHTML = `[${time}] ${data.username}: ${data.message} <span class="room-tag">${data.roomName}</span>`;
+                messages.appendChild(item);
+                window.scrollTo(0, document.body.scrollHeight);
+            }
+
+            function addSystemMessage(message) {
+                const item = document.createElement('li');
+                item.className = 'system';
+                item.textContent = message;
+                messages.appendChild(item);
+                window.scrollTo(0, document.body.scrollHeight);
+            }
+
+            function updateUsersList(users) {
+                usersList.innerHTML = users
+                    .map(user => `<li>${user}</li>`)
+                    .join('');
+            }
+
+            function updateRoomsList(rooms) {
+                roomsList.innerHTML = '';
+                rooms.forEach(room => {
+                    const roomElement = document.createElement('div');
+                    roomElement.className = 'room-item';
+                    roomElement.innerHTML = `
+                        <div class="name">${room.name}</div>
+                        <div class="members">${room.memberCount} ${room.memberCount === 1 ? 'member' : 'members'}</div>
+                    `;
+                    roomElement.addEventListener('click', () => {
+                        openJoinDialog(room.id, room.name);
+                    });
+                    roomsList.appendChild(roomElement);
+                });
+            }
+
+            function openJoinDialog(roomId, roomName) {
+                joinRoomName.textContent = roomName;
+                joinRoomId.value = roomId;
+                joinRoomCode.value = '';
+                joinDialog.style.display = 'block';
+                joinOverlay.style.display = 'block';
+                joinRoomCode.focus();
+            }
+
+            function updateCurrentRoom(name, isRoom) {
+                currentRoomName.textContent = name;
+                if (isRoom) {
+                    leaveRoomBtn.style.display = 'inline-block';
+                } else {
+                    leaveRoomBtn.style.display = 'none';
+                }
             }
         }
     </script>
