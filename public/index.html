@@ -4,13 +4,51 @@
     <title>Socket.IO Chat</title>
     <style>
         body { margin: 0; padding-bottom: 3rem; font-family: Arial, sans-serif; }
-        #messages { list-style-type: none; margin: 0; padding: 0; }
+        #messages { list-style-type: none; margin: 0; padding: 0; margin-right: 200px; padding-top: 60px; }
         #messages li { padding: 0.5rem 1rem; }
         #messages .system { color: #666; font-style: italic; }
         #messages .message { padding: 8px; margin: 4px 0; }
         #messages .room-message { background-color: #e3f2fd; }
-        #online-users { position: fixed; right: 0; top: 0; width: 200px; background: #f0f0f0; padding: 1rem; height: calc(50% - 2rem); overflow-y: auto; }
-        #rooms-panel { position: fixed; right: 0; bottom: 3rem; top: 50%; width: 200px; background: #f0f0f0; padding: 1rem; overflow-y: auto; }
+        
+        /* Fixed header to ensure it's always visible */
+        .current-room { 
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: #ddd;
+            z-index: 10;
+            height: 50px;
+            box-sizing: border-box;
+        }
+        
+        /* Adjust online users panel to start below the header */
+        #online-users { 
+            position: fixed;
+            right: 0;
+            top: 50px; /* Start below the header */
+            width: 200px;
+            background: #f0f0f0;
+            padding: 1rem;
+            height: calc(50% - 2rem - 50px); /* Subtract header height */
+            overflow-y: auto;
+        }
+        
+        #rooms-panel { 
+            position: fixed;
+            right: 0;
+            bottom: 3rem;
+            top: calc(50% + 25px); /* Adjust for header height */
+            width: 200px;
+            background: #f0f0f0;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        
         #form { background: #333; padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; }
         #input { border: none; padding: 0.5rem; flex-grow: 1; margin: 0.25rem; border-radius: 3px; }
         #form button { background: #09f; color: white; border: none; padding: 0.5rem 1rem; margin: 0.25rem; border-radius: 3px; }
@@ -23,7 +61,6 @@
         .room-item:hover { background: #e0e0e0; }
         .room-item .name { font-weight: bold; }
         .room-item .members { font-size: 12px; color: #666; }
-        .current-room { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #ddd; margin-bottom: 10px; }
         .dialog-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; z-index: 100; }
         .dialog { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 5px; z-index: 101; display: none; width: 300px; }
         .dialog h3 { margin-top: 0; }
@@ -33,6 +70,22 @@
         .room-tag { background: #e3f2fd; color: #0d47a1; padding: 2px 6px; border-radius: 10px; font-size: 12px; display: inline-block; margin-left: 5px; }
         .user-info { display: flex; align-items: center; }
         .anonymous-badge { background: #a0aec0; color: white; padding: 2px 6px; border-radius: 4px; font-size: 12px; margin-left: 5px; }
+        
+        .btn-logout {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            z-index: 20; /* Ensure the button is above other elements */
+        }
+        
+        .btn-logout:hover {
+            background-color: #c82333;
+        }
     </style>
 </head>
 <body>
@@ -45,7 +98,7 @@
         </div>
         <div>
             <button id="leave-room-btn" style="display: none;">Leave Room</button>
-            <button id="logout-btn" style="margin-left: 10px;">Logout</button>
+            <button id="logout-btn" class="btn-logout" style="margin-left: 10px;">Logout</button>
         </div>
     </div>
 
