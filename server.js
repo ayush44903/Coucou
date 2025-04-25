@@ -8,6 +8,19 @@ const io = require('socket.io')(http, {
         credentials: true
     }
 });
+const admin = require('./firebase-config');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+
+// Middleware setup
+app.use(express.json());
+app.use(cookieParser());
+app.use(session({
+  secret: 'your-session-secret',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: process.env.NODE_ENV === 'production' }
+}));
 
 // Serve static files from public directory
 app.use(express.static('public'));
@@ -17,13 +30,90 @@ const connectedUsers = new Map();
 // Track rooms with their secret codes
 const rooms = new Map(); // roomId -> {code, creator, name, members: [socketIds]}
 
+// Authentication middleware for API endpoints
+const authenticateUser = async (req, res, next) => {
+  try {
+    const idToken = req.headers.authorization?.split('Bearer ')[1];
+    if (!idToken) {
+      return res.status(401).json({ error: 'Unauthorized - No token provided' });
+    }
+
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    req.user = decodedToken;
+    next();
+  } catch (error) {
+    console.error('Authentication error:', error);
+    res.status(401).json({ error: 'Unauthorized - Invalid token' });
+  }
+};
+
+// Authentication endpoints
+app.post('/api/login', async (req, res) => {
+  // The actual Firebase authentication happens client-side
+  // This endpoint is for setting up the session after client-side auth
+  try {
+    const { idToken } = req.body;
+    if (!idToken) {
+      return res.status(400).json({ error: 'ID token is required' });
+    }
+    
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const user = {
+      uid: decodedToken.uid,
+      email: decodedToken.email,
+      name: decodedToken.name || decodedToken.email
+    };
+    
+    req.session.user = user;
+    res.status(200).json({ message: 'Login successful', user });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(401).json({ error: 'Authentication failed' });
+  }
+});
+
+app.post('/api/logout', (req, res) => {
+  req.session.destroy();
+  res.status(200).json({ message: 'Logout successful' });
+});
+
+app.get('/api/user', authenticateUser, (req, res) => {
+  res.json({ user: req.user });
+});
+
+// Socket.IO authentication middleware
+io.use(async (socket, next) => {
+  try {
+    const token = socket.handshake.auth.token;
+    if (!token) {
+      return next(new Error('Authentication error - No token provided'));
+    }
+    
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    socket.user = {
+      uid: decodedToken.uid,
+      email: decodedToken.email,
+      displayName: decodedToken.name || decodedToken.email
+    };
+    next();
+  } catch (error) {
+    console.error('Socket authentication error:', error);
+    next(new Error('Authentication error'));
+  }
+});
+
 // Socket.IO connection handling
 io.on('connection', (socket) => {
     try {
-        // Handle user joining with name
-        socket.on('join', (username) => {
-            const sanitizedUsername = username?.trim().slice(0, 30) || `User-${socket.id.slice(0, 6)}`;
-            connectedUsers.set(socket.id, sanitizedUsername);
+        // Handle user joining with name (now using Firebase user info)
+        socket.on('join', () => {
+            const username = socket.user.displayName || `User-${socket.id.slice(0, 6)}`;
+            const userId = socket.user.uid;
+            
+            connectedUsers.set(socket.id, {
+                username,
+                uid: userId
+            });
             
             // Add user to default room
             socket.join('lobby');
@@ -31,7 +121,8 @@ io.on('connection', (socket) => {
             // Broadcast user joined message
             io.emit('user joined', {
                 userId: socket.id,
-                username: sanitizedUsername,
+                username: username,
+                firebaseUid: userId,
                 timestamp: new Date().toISOString(),
                 onlineUsers: Array.from(connectedUsers.values())
             });
