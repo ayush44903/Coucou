@@ -417,9 +417,19 @@
             }
 
             function updateUsersList(users) {
-                usersList.innerHTML = users
-                    .map(user => `<li>${user}</li>`)
-                    .join('');
+                usersList.innerHTML = '';
+                if (Array.isArray(users)) {
+                    users.forEach(user => {
+                        const li = document.createElement('li');
+                        // Handle both object format and string format
+                        if (typeof user === 'object' && user !== null) {
+                            li.textContent = user.name || 'User';
+                        } else {
+                            li.textContent = user || 'User';
+                        }
+                        usersList.appendChild(li);
+                    });
+                }
             }
 
             function updateRoomsList(rooms) {

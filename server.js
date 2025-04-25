@@ -143,21 +143,22 @@ io.on('connection', (socket) => {
             const username = socket.user.displayName || `User-${socket.id.slice(0, 6)}`;
             const userId = socket.user.uid;
             
-            connectedUsers.set(socket.id, {
-                username,
-                uid: userId
-            });
+            // Store username as a string instead of an object
+            connectedUsers.set(socket.id, username);
             
             // Add user to default room
             socket.join('lobby');
             
-            // Broadcast user joined message
+            // Broadcast user joined message with properly formatted online users list
             io.emit('user joined', {
                 userId: socket.id,
                 username: username,
                 firebaseUid: userId,
                 timestamp: new Date().toISOString(),
-                onlineUsers: Array.from(connectedUsers.values())
+                onlineUsers: Array.from(connectedUsers).map(([id, name]) => ({ 
+                    id: id, 
+                    name: name 
+                }))
             });
         });
 
@@ -418,7 +419,7 @@ io.on('connection', (socket) => {
                 userId: socket.id,
                 username: username,
                 timestamp: new Date().toISOString(),
-                onlineUsers: Array.from(connectedUsers.values())
+                onlineUsers: Array.from(connectedUsers, ([id, name]) => ({ id, name }))
             });
             
             console.log(`User disconnected: ${username} (${socket.id})`);

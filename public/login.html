@@ -154,11 +154,21 @@
         
         <div class="separator">OR</div>
         
-        <button id="anonymous-login" class="btn btn-secondary">Continue as Guest</button>
+        <form id="guest-form">
+          <div class="form-group">
+            <label for="guest-username">Guest Username</label>
+            <input type="text" id="guest-username" placeholder="Enter a username to use as guest" required>
+          </div>
+          <button type="submit" id="anonymous-login" class="btn btn-secondary">Continue as Guest</button>
+        </form>
       </div>
       
       <div id="signup-panel" class="auth-panel">
         <form id="signup-form">
+          <div class="form-group">
+            <label for="signup-username">Username</label>
+            <input type="text" id="signup-username" placeholder="How you'll appear in chat" required>
+          </div>
           <div class="form-group">
             <label for="signup-email">Email</label>
             <input type="email" id="signup-email" required>

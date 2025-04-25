@@ -39,9 +39,28 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Handle anonymous login
-  const handleAnonymousLogin = async () => {
+  const handleAnonymousLogin = async (e) => {
+    if (e) e.preventDefault();
+    
+    // Get the guest username if we're submitting the guest form
+    let guestUsername = '';
+    const guestUsernameField = document.getElementById('guest-username');
+    if (guestUsernameField) {
+      guestUsername = guestUsernameField.value.trim();
+      if (!guestUsername) {
+        showError('Please enter a username to continue as guest');
+        return;
+      }
+    }
+    
     try {
       const userCredential = await firebase.auth().signInAnonymously();
+      
+      // Set the display name to the provided guest username or generate a random one
+      await userCredential.user.updateProfile({
+        displayName: guestUsername || "Guest-" + Math.floor(Math.random() * 10000)
+      });
+      
       const idToken = await userCredential.user.getIdToken();
       
       // Send token to your server
@@ -56,10 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
       
       if (response.ok) {
-        // Set a display name for anonymous users
-        await userCredential.user.updateProfile({
-          displayName: "Guest-" + Math.floor(Math.random() * 10000)
-        });
         window.location.href = '/index.html';
       } else {
         showError('Anonymous login failed: ' + (data.error || 'Server error'));
@@ -73,9 +88,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Attach anonymous login handlers
   const anonymousLoginBtn = document.getElementById('anonymous-login');
   const anonymousLoginSignupBtn = document.getElementById('anonymous-login-signup');
+  const guestForm = document.getElementById('guest-form');
   
-  if (anonymousLoginBtn) {
-    anonymousLoginBtn.addEventListener('click', handleAnonymousLogin);
+  if (guestForm) {
+    guestForm.addEventListener('submit', handleAnonymousLogin);
   }
   
   if (anonymousLoginSignupBtn) {
@@ -145,12 +161,43 @@ document.addEventListener('DOMContentLoaded', () => {
   if (signupForm) {
     signupForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const username = document.getElementById('signup-username').value.trim();
       const email = document.getElementById('signup-email').value;
       const password = document.getElementById('signup-password').value;
       
+      if (!username) {
+        showError('Please enter a username', signupForm);
+        return;
+      }
+      
       try {
-        await firebase.auth().createUserWithEmailAndPassword(email, password);
-        alert('Account created! Please log in.');
+        // Create user with email and password
+        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+        
+        // Set the display name to the provided username
+        await userCredential.user.updateProfile({
+          displayName: username
+        });
+        
+        // Get the token after setting display name
+        const idToken = await userCredential.user.getIdToken(true);
+        
+        // Send token to server
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ idToken })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          window.location.href = '/index.html';
+        } else {
+          showError('Account created but login failed: ' + (data.error || 'Server error'), signupForm);
+        }
       } catch (error) {
         console.error('Signup error details:', error);
         
