@@ -31,13 +31,22 @@
         .dialog-buttons { text-align: right; margin-top: 15px; }
         .dialog-buttons button { margin-left: 10px; padding: 5px 15px; }
         .room-tag { background: #e3f2fd; color: #0d47a1; padding: 2px 6px; border-radius: 10px; font-size: 12px; display: inline-block; margin-left: 5px; }
+        .user-info { display: flex; align-items: center; }
+        .anonymous-badge { background: #a0aec0; color: white; padding: 2px 6px; border-radius: 4px; font-size: 12px; margin-left: 5px; }
     </style>
 </head>
 <body>
     <div class="current-room">
-        <div>Current Room: <span id="current-room-name">Lobby</span></div>
-        <button id="leave-room-btn" style="display: none;">Leave Room</button>
-        <button id="logout-btn" style="margin-left: 10px;">Logout</button>
+        <div>
+            <div id="user-info" class="user-info">
+                <span>Welcome, <span id="username-display"></span></span>
+            </div>
+            Current Room: <span id="current-room-name">Lobby</span>
+        </div>
+        <div>
+            <button id="leave-room-btn" style="display: none;">Leave Room</button>
+            <button id="logout-btn" style="margin-left: 10px;">Logout</button>
+        </div>
     </div>
 
     <div id="online-users">
@@ -79,6 +88,8 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <!-- Import chat.js -->
+    <script src="chat.js"></script>
     <script>
         // Firebase configuration
         const firebaseConfig = {
@@ -101,6 +112,23 @@
                 window.location.href = '/login.html';
             } else {
                 // User is logged in, initialize the chat
+                // Display user information
+                const usernameDisplay = document.getElementById('username-display');
+                if (usernameDisplay) {
+                    usernameDisplay.textContent = user.displayName || user.email || 'User';
+                }
+                
+                // Add anonymous badge if user is anonymous
+                if (user.isAnonymous) {
+                    const userInfo = document.getElementById('user-info');
+                    if (userInfo) {
+                        const anonBadge = document.createElement('span');
+                        anonBadge.className = 'anonymous-badge';
+                        anonBadge.textContent = 'Guest';
+                        userInfo.appendChild(anonBadge);
+                    }
+                }
+                
                 initializeChat(user);
             }
         });
@@ -175,6 +203,14 @@
             socket.on('connect_error', (error) => {
                 console.error('Connection error:', error);
                 addSystemMessage('Connection error: ' + error.message);
+                
+                // If authentication error, redirect to login
+                if (error.message.includes('Authentication error')) {
+                    addSystemMessage('Authentication failed. Redirecting to login...');
+                    setTimeout(() => {
+                        window.location.href = '/login.html';
+                    }, 2000);
+                }
             });
 
             // Send message handler

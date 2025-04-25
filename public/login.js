@@ -38,6 +38,50 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error('Auth error:', message);
   }
 
+  // Handle anonymous login
+  const handleAnonymousLogin = async () => {
+    try {
+      const userCredential = await firebase.auth().signInAnonymously();
+      const idToken = await userCredential.user.getIdToken();
+      
+      // Send token to your server
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ idToken })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        // Set a display name for anonymous users
+        await userCredential.user.updateProfile({
+          displayName: "Guest-" + Math.floor(Math.random() * 10000)
+        });
+        window.location.href = '/index.html';
+      } else {
+        showError('Anonymous login failed: ' + (data.error || 'Server error'));
+      }
+    } catch (error) {
+      console.error('Anonymous login error:', error);
+      showError(error.message || 'An error occurred during anonymous login');
+    }
+  };
+
+  // Attach anonymous login handlers
+  const anonymousLoginBtn = document.getElementById('anonymous-login');
+  const anonymousLoginSignupBtn = document.getElementById('anonymous-login-signup');
+  
+  if (anonymousLoginBtn) {
+    anonymousLoginBtn.addEventListener('click', handleAnonymousLogin);
+  }
+  
+  if (anonymousLoginSignupBtn) {
+    anonymousLoginSignupBtn.addEventListener('click', handleAnonymousLogin);
+  }
+
   // Check if login form exists
   const loginForm = document.getElementById('login-form');
   if (loginForm) {
@@ -137,8 +181,8 @@ document.addEventListener('DOMContentLoaded', () => {
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       console.log('User is already signed in');
-      // Optionally redirect to chat page if they're already logged in
-      // window.location.href = '/index.html';
+      // Redirect to chat page if they're already logged in
+      window.location.href = '/index.html';
     } else {
       console.log('No user is signed in');
     }
