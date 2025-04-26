@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat UI Upgraded - Dark Mode + Pro Input</title>
+  <style>
+    /* CSS START */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .container {
+        display: flex;
+        height: 100vh;
+      }
+    
+      /* Sidebar */
+      .sidebar {
+        width: 100px;
+        background-color: #b91c1c;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 30px;
+    
+        /* Rounded right edge */
+        border-top-right-radius: 20px;
+        border-bottom-right-radius: 20px;
+      }
+    
+      .menu-item {
+        color: white;
+        font-size: 32px;
+        cursor: pointer;
+      }
+    
+    /* Main Content */
+    .main-content {
+      display: flex;
+      flex: 1;
+      position: relative;
+    }
+
+    /* Dark Mode Toggle */
+    .dark-mode-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #8b5cf6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    /* Friends List */
+    .friends-list {
+      width: 300px;
+      background-color: #f5f3ff;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      transition: background-color 0.3s;
+    }
+
+    .search-bar {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+
+    .friends {
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .friend {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .friend:hover {
+      background-color: #ddd6fe;
+    }
+
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      background-color: #ccc;
+    }
+
+    .friend-info .name {
+      font-weight: bold;
+      margin: 0;
+    }
+
+    .friend-info .message {
+      margin: 0;
+      font-size: 12px;
+      color: gray;
+    }
+    
+
+    /* Chat Box */
+    .chat-box {
+      flex: 1;
+      background-color: #f9fafb;
+      display: flex;
+      flex-direction: column;
+      display: none;
+      transition: background-color 0.3s;
+    }
+
+    .chat-header {
+      padding: 20px;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .chat-header img {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    #chatFriendName {
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    
+
+    .chat-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .chat-messages .message-incoming,
+    .chat-messages .message-outgoing {
+      padding: 10px;
+      border-radius: 10px;
+      max-width: 70%;
+      position: relative;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .chat-messages .message-incoming {
+      background-color: #fcd5ce;
+    }
+
+    .chat-messages .message-outgoing {
+      background-color: #c7d2fe;
+      align-self: flex-end;
+    }
+
+    .timestamp {
+      font-size: 10px;
+      color: gray;
+      margin-top: 5px;
+      text-align: right;
+    }
+
+    .typing-indicator {
+      font-size: 12px;
+      color: gray;
+      margin-bottom: 5px;
+      display: none;
+    }
+
+    /* NEW Chat Input Section */
+    .chat-input {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-top: 1px solid #ddd;
+    }
+
+    .chat-input button, .chat-input label {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .chat-input input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    /* Dark Mode Classes */
+    body.dark {
+      background-color: #1f2937;
+      color: #f3f4f6;
+    }
+
+    body.dark .friends-list {
+      background-color: #374151;
+    }
+
+    body.dark .chat-box {
+      background-color: #111827;
+    }
+
+    body.dark .friend:hover {
+      background-color: #4b5563;
+    }
+
+    body.dark .chat-messages .message-incoming {
+      background-color: #6b7280;
+      color: white;
+    }
+
+    body.dark .chat-messages .message-outgoing {
+      background-color: #8b5cf6;
+      color: white;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* CSS END */
+  </style>
+</head>
+
+<body>
+    
+  <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="menu-item">🏠</div>
+      <div class="menu-item">🌟</div>
+      <div class="menu-item">💬</div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+
+      <!-- Friends List -->
+      <div class="friends-list">
+        <input type="text" placeholder="Search..." class="search-bar" id="searchInput" oninput="searchFriends()">
+        <div class="friends" id="friendsContainer">
+          <div class="friend" onclick="openChat('Aniket', 'soop.webp', true)">
+            <img src="soop.webp" class="avatar">
+            <div class="friend-info">
+              <p class="name">Aniket</p>
+              <p class="message">How do you feel about yesterday?</p>
+            </div>
+          </div>
+          <div class="friend" onclick="openChat('Ashita', 'sad.jpg', false)">
+            <img src="sad.jpg" class="avatar">
+            <div class="friend-info">
+              <p class="name">Ashita</p>
+              <p class="message">I'll start working tonight!</p>
+            </div>
+          </div>
+          <div class="friend" onclick="openChat('Apran', '2b5a5fbe2dfc0a3e24fd6644a95a183d.jpg', true)">
+            <img src="2b5a5fbe2dfc0a3e24fd6644a95a183d.jpg" class="avatar">
+            <div class="friend-info">
+              <p class="name">Apran</p>
+              <p class="message">I'll send it soon.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Box -->
+      <div class="chat-box" id="chatBox">
+        <div class="chat-header">
+          <img id="chatFriendAvatar" src="">
+          <div>
+            <p id="chatFriendName">Select a Friend</p>
+            <span id="onlineStatus"></span>
+          </div>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <!-- Typing Indicator -->
+          <div class="typing-indicator" id="typingIndicator">Typing...</div>
+          <!-- Messages will appear here -->
+        </div>
+        <div class="chat-input">
+            <div style="position: relative;">
+              <button id="emojiButton">😀</button>
+          
+              <div id="emojiPicker" style="display:none; position: absolute; bottom: 50px; left: 0; background: white; border: 1px solid #ccc; border-radius: 10px; padding: 10px; width: 250px; max-height: 250px; overflow-y: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                <input type="text" id="emojiSearch" placeholder="Search..." style="width: 100%; padding: 5px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                <div id="emojiList" style="display: flex; flex-wrap: wrap; gap: 5px;">
+                  <!-- Emojis will be loaded here dynamically -->
+                </div>
+              </div>
+            </div>
+          
+            <label for="fileUpload">📎</label>
+            <input type="file" id="fileUpload" onchange="alert('File selected!')" style="display:none;">
+            
+            <input type="text" placeholder="Type a message..." id="messageInput" oninput="showTyping()" onkeypress="handleEnter(event)">
+            
+            <button onclick="sendMessage()">➤</button>
+          </div>
+          
+          
+        
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* JavaScript START */
+    function openChat(friendName, avatarUrl, isOnline) {
+      const chatBox = document.getElementById("chatBox");
+      const chatFriendName = document.getElementById("chatFriendName");
+      const chatFriendAvatar = document.getElementById("chatFriendAvatar");
+      const onlineStatus = document.getElementById("onlineStatus");
+      const chatMessages = document.getElementById("chatMessages");
+
+      chatBox.style.display = "flex";
+      chatFriendName.textContent = friendName;
+      chatFriendAvatar.src = avatarUrl;
+    
+
+      chatMessages.innerHTML = `
+        <div class="typing-indicator" id="typingIndicator">Typing...</div>
+        <div class="message-incoming">Hi ${friendName} 👋
+          <div class="timestamp">${getCurrentTime()}</div>
+        </div>
+        <div class="message-outgoing">Hello! How's it going?
+          <div class="timestamp">${getCurrentTime()}</div>
+        </div>
+      `;
+      scrollToBottom();
+    }
+
+    function sendMessage() {
+      const messageInput = document.getElementById("messageInput");
+      const chatMessages = document.getElementById("chatMessages");
+
+      const message = messageInput.value.trim();
+      if (message) {
+        const messageDiv = document.createElement("div");
+        messageDiv.className = "message-outgoing";
+        messageDiv.innerHTML = `${message}<div class="timestamp">${getCurrentTime()}</div>`;
+        chatMessages.appendChild(messageDiv);
+        messageInput.value = "";
+        hideTyping();
+        scrollToBottom();
+      }
+    }
+
+    function handleEnter(event) {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
+    }
+
+    function scrollToBottom() {
+      const chatMessages = document.getElementById("chatMessages");
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function getCurrentTime() {
+      const now = new Date();
+      return now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+    }
+
+    function searchFriends() {
+      const input = document.getElementById('searchInput').value.toLowerCase();
+      const friends = document.getElementById('friendsContainer').getElementsByClassName('friend');
+      
+      Array.from(friends).forEach(friend => {
+        const name = friend.querySelector('.name').textContent.toLowerCase();
+        if (name.includes(input)) {
+          friend.style.display = 'flex';
+        } else {
+          friend.style.display = 'none';
+        }
+      });
+    }
+
+    function showTyping() {
+      document.getElementById("typingIndicator").style.display = "block";
+    }
+
+    function hideTyping() {
+      setTimeout(() => {
+        document.getElementById("typingIndicator").style.display = "none";
+      }, 1000);
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+    }
+    const emojiButton = document.getElementById('emojiButton');
+const emojiPicker = document.getElementById('emojiPicker');
+const emojiList = document.getElementById('emojiList');
+const emojiSearch = document.getElementById('emojiSearch');
+const messageInput = document.getElementById('messageInput');
+
+const emojis = [
+  "😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣", "😊", "😇", "🙂", "🙃", "😉",
+  "😌", "😍", "🥰", "😘", "😗", "😙", "😚", "🤗", "🤔", "🤨", "😐", "😑", "😶",
+  "🙄", "😏", "😣", "😥", "😮‍💨", "😮", "😯", "😪", "😫", "🥱", "😴", "😛",
+  "😜", "😝", "🤤", "😒", "😓", "😔", "😕", "🙃", "🫠", "🫡", "🫢", "🫣", "😲"
+];
+
+// Load emojis
+function loadEmojis(filter = "") {
+  emojiList.innerHTML = "";
+  emojis.filter(e => e.includes(filter)).forEach(emoji => {
+    const span = document.createElement('span');
+    span.textContent = emoji;
+    span.style.fontSize = '24px';
+    span.style.cursor = 'pointer';
+    span.addEventListener('click', () => {
+      messageInput.value += emoji;
+      emojiPicker.style.display = 'none'; // Close after selecting
+    });
+    emojiList.appendChild(span);
+  });
+}
+
+loadEmojis();
+
+// Toggle emoji picker
+emojiButton.addEventListener('click', () => {
+  emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'block' : 'none';
+});
+
+// Search emojis
+emojiSearch.addEventListener('input', (e) => {
+  loadEmojis(e.target.value);
+});
+
+    /* JavaScript END */
+  </script>
+</body>
+</html>

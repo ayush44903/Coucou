@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About Coucou</title>
+  <style>
+    /* Global Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Professional Font */
+      background-color: #E6E6FA;
+      color: #333;
+      line-height: 1.6;
+      font-size: 23px; /* Set base font size */
+    }
+
+    /* Navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 5%;
+      background: #E6E6FA;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .navbar .logo {
+      font-weight: 700;
+      font-size: 1.8rem;
+    }
+    
+    .navbar .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    
+    .navbar .nav-links a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 600;
+      font-size: 1.1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      transition: background 0.3s;
+    }
+    
+    .navbar .nav-links a:hover {
+      background-color: #d3d3d3;
+    }
+    
+    .join-btn {
+      background-color: #d3d3d3;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .join-btn:hover {
+      background-color: #bbb;
+    }
+
+    /* Main Section */
+    .main {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5% 8%;
+      min-height: 90vh;
+    }
+    .content {
+      flex: 1;
+      padding-right: 3rem;
+    }
+    .content h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1.2rem;
+      color: #222;
+      font-weight: 700;
+    }
+    .content p {
+      font-size: 1.4rem; /* Slightly bigger paragraph font */
+      margin-bottom: 2rem;
+      color: #555;
+      max-width: 700px;
+      line-height: 1.8;
+    }
+    .team-btn {
+      background-color: #d3d3d3;
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background-color 0.3s;
+    }
+    .team-btn:hover {
+      background-color: #bbb;
+    }
+
+    /* Image Section */
+    .image-section {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .image-section img {
+      width: 100%; /* Make image take full available width */
+      max-width: 600px; /* Control maximum size */
+      height: auto;
+      border-radius: 15px;
+      object-fit: cover;
+    }
+
+    /* Responsive */
+    @media (max-width: 991px) {
+      .main {
+        flex-direction: column;
+        text-align: center;
+        padding: 5%;
+      }
+      .content {
+        padding-right: 0;
+      }
+      .image-section {
+        margin-top: 3rem;
+      }
+      .image-section img {
+        max-width: 90%; /* Slightly reduce for mobile */
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="logo">logo</div>
+    <div class="nav-links">
+      <a href="#">Home</a>
+      <button class="join-btn">Join now</button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <div class="content">
+      <h1>About Coucou !!</h1>
+      <p>
+        Coucou isn’t just another chat app — it’s a whole new way to connect. <br><br>
+        We’re building a messaging platform where your data stays yours, your identity belongs to you, 
+        and your conversations are 100% private. No ads, no surveillance, no shady middlemen.
+      </p>
+      <button class="team-btn">
+        Meet The Team ➔
+      </button>
+    </div>
+
+    <div class="image-section">
+      <img src="about.png" alt="Chat Illustration">
+    </div>
+  </div>
+
+</body>
+</html>
