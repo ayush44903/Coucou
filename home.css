@@ -132,20 +132,24 @@ body{
     align-items: center;
 padding: 60px 50px;
 }
-.text-content h1{
+.text-container{
+    max-width: 600px;
+    margin-left: 50px;
+}
+.text-container h1{
     font-size:3.6 rem;
     margin-bottom:120px;
-    margin-top:-300px;
+    /* margin-top:px; */
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
-.text-content p{
+.text-container p{
     font-size:1.2 rem;
     margin-bottom:50px ;
-    margin-top: 40px;
+    margin-top:px;
 }
 .buttons{
     display: flex;
-    gap:20px;
+    gap:40px;
     margin-top: 50px;
 
 }

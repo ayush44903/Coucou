@@ -116,11 +116,22 @@ body{
   
   .animated-button:active {
     scale: 0.95;
-    box-shadow: 0 0 0 4px greenyellow;
+    box-shadow: 0 0 0 4px #aee2ff;
   }
   
   .animated-button:hover .circle {
     width: 220px;
     height: 220px;
     opacity: 1;
+  }
+  .text-container{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:20px;
+    width:50%;
+    height:100vh;
+    
   }
