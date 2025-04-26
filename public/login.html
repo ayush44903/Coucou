@@ -7,8 +7,8 @@
   <link rel="stylesheet" href="styles.css">
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f7f9;
+      font-family: 'Poppins', Arial, sans-serif;
+      background: linear-gradient(135deg, #f4f7f9, #e2e8f0);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -16,69 +16,83 @@
       margin: 0;
     }
     .container {
-      width: 100%;
-      max-width: 450px;
-      padding: 20px;
+      width: 90%;
+      max-width: 550px;
+      padding: 30px;
     }
     .auth-container {
-      background-color: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      padding: 2rem;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      padding: 3rem 2.5rem;
+      transition: all 0.3s ease;
     }
     h1 {
       text-align: center;
-      color: #4a5568;
-      margin-bottom: 1.5rem;
+      color: #2d3748;
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      font-weight: 700;
     }
     .auth-tabs {
       display: flex;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid #e2e8f0;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid #e2e8f0;
     }
     .auth-tab {
       flex: 1;
-      padding: 0.75rem;
+      padding: 1rem;
       background: none;
       border: none;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 1rem;
       color: #718096;
+      font-weight: 600;
+      transition: color 0.3s;
     }
     .auth-tab.active {
       color: #4299e1;
-      border-bottom: 2px solid #4299e1;
+      border-bottom: 3px solid #4299e1;
     }
     .auth-panel {
       display: none;
+      animation: fadeIn 0.5s ease forwards;
     }
     .auth-panel.active {
       display: block;
     }
     .form-group {
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.75rem;
     }
     label {
       display: block;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.75rem;
       color: #4a5568;
+      font-weight: 600;
     }
     input {
       width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #e2e8f0;
-      border-radius: 4px;
-      font-size: 16px;
+      padding: 1rem;
+      border: 1px solid #cbd5e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+    input:focus {
+      outline: none;
+      border-color: #4299e1;
+      box-shadow: 0 0 5px rgba(66, 153, 225, 0.5);
     }
     .btn {
       width: 100%;
-      padding: 0.75rem;
+      padding: 1rem;
       border: none;
-      border-radius: 4px;
-      font-size: 16px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.2s;
-      margin-bottom: 0.75rem;
+      transition: background-color 0.3s;
+      margin-bottom: 1rem;
     }
     .btn-primary {
       background-color: #4299e1;
@@ -96,16 +110,17 @@
     }
     .separator {
       text-align: center;
-      margin: 1rem 0;
+      margin: 1.5rem 0;
       color: #718096;
       position: relative;
+      font-size: 0.9rem;
     }
     .separator::before,
     .separator::after {
       content: '';
       position: absolute;
       top: 50%;
-      width: 45%;
+      width: 40%;
       height: 1px;
       background-color: #e2e8f0;
     }
@@ -118,18 +133,25 @@
     .error-message {
       color: #e53e3e;
       text-align: center;
-      margin-bottom: 1rem;
-      padding: 0.5rem;
+      margin-bottom: 1.5rem;
+      padding: 0.75rem;
       background-color: #fff5f5;
-      border-radius: 4px;
+      border-radius: 8px;
       display: none;
+      font-weight: 600;
+    }
+  
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px);}
+      to { opacity: 1; transform: translateY(0);}
     }
   </style>
+  
 </head>
 <body>
   <div class="container">
     <div class="auth-container">
-      <h1>Welcome to Socket Chat</h1>
+      <h1>Welcome to Coucou</h1>
       
       <!-- Error message container -->
       <div class="error-message" id="error-message"></div>
