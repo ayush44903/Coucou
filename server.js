@@ -140,7 +140,7 @@ io.on('connection', (socket) => {
     try {
         // Handle user joining with name (now using Firebase user info)
         socket.on('join', () => {
-            const username = socket.user.displayName || `User-${socket.id.slice(0, 6)}`;
+            const username = socket.user.displayName;
             const userId = socket.user.uid;
             
             // Store username as a string instead of an object

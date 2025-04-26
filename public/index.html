@@ -423,7 +423,7 @@
                         const li = document.createElement('li');
                         // Handle both object format and string format
                         if (typeof user === 'object' && user !== null) {
-                            li.textContent = user.name || 'User';
+                            li.textContent = user.displayName || user.email || user.username || 'User';
                         } else {
                             li.textContent = user || 'User';
                         }
