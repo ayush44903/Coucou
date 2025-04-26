@@ -12,27 +12,31 @@
     }
 
     .container {
-      display: flex;
-      height: 100vh;
-    }
-
-    /* Sidebar */
-    .sidebar {
-      width: 100px;
-      background-color: #b91c1c;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 30px;
-    }
-
-    .menu-item {
-      color: white;
-      font-size: 32px;
-      cursor: pointer;
-    }
-
+        display: flex;
+        height: 100vh;
+      }
+    
+      /* Sidebar */
+      .sidebar {
+        width: 100px;
+        background-color: #b91c1c;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 30px;
+    
+        /* Rounded right edge */
+        border-top-right-radius: 20px;
+        border-bottom-right-radius: 20px;
+      }
+    
+      .menu-item {
+        color: white;
+        font-size: 32px;
+        cursor: pointer;
+      }
+    
     /* Main Content */
     .main-content {
       display: flex;
@@ -108,19 +112,6 @@
       font-size: 12px;
       color: gray;
     }
-    
-    #emojiPicker {
-        opacity: 0;
-        transform: scale(0.95);
-        transition: opacity 0.2s ease, transform 0.2s ease;
-        pointer-events: none;
-      }
-      
-      #emojiPicker.show {
-        opacity: 1;
-        transform: scale(1);
-        pointer-events: auto;
-      }
     
 
     /* Chat Box */
@@ -261,6 +252,7 @@
 </head>
 
 <body>
+    
   <div class="container">
     <!-- Sidebar -->
     <div class="sidebar">
