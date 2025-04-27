@@ -239,3 +239,20 @@ body{
     margin-top: -50px;
     
 }
+@media (max-width: 768px) {
+  .image-content {
+    display: none;
+  }
+  .text-container {
+    height: 539px;
+    width: 500px;
+    bottom: 0px;
+    position: absolute;
+    margin-left: 0px;
+  }
+  /* .body {
+    /* overflow: auto; */
+  } */
+  .navbar {
+    padding: 10px 20px;
+  }
