@@ -58,6 +58,44 @@
       font-size: 14px;
     }
 
+    /* Inline bubble input */
+.bubble-input {
+  width: 100%;
+  padding: 10px 15px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  outline: none;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+
+/* Save / Cancel buttons */
+.bubble-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.bubble-actions button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.bubble-actions .save-btn {
+  background-color: #4f46e5;
+  color: white;
+}
+
+.bubble-actions .cancel-btn {
+  background-color: #e11d48;
+  color: white;
+}
+
+
     /* Friends List */
     .friends-list {
       width: 300px;
@@ -397,7 +435,11 @@ settingsPage.style.display = 'none';
 settingsPage.innerHTML = `
   <h3 style="margin-bottom: 20px;">Settings</h3>
   <div class="setting-option" onclick="toggleDarkMode()">🌗 Toggle Theme</div>
+  <div id="changeNameOption">
+    <div class="setting-option" onclick="changeName()">✏️ Change Name</div>
+  </div>
 `;
+
 function changeName() {
   const newName = prompt("Enter your new name:");
   if (newName) {
