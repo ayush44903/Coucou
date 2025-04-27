@@ -305,6 +305,20 @@
       to { opacity: 1; transform: translateY(0); }
     }
     
+      @keyframes slideDown {
+        0% {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      
+     
+    
     /* CSS END */
   </style>
 </head>
@@ -387,15 +401,18 @@
           </div>
           
           
+          
         
 
       </div>
     </div>
   </div>
   
+  
 
   <script>
     /* JavaScript START */
+    
     const menuItems = document.querySelectorAll(".menu-item");
 const friendsList = document.querySelector(".friends-list");
 const groupsList = document.createElement('div');
@@ -441,12 +458,129 @@ settingsPage.innerHTML = `
 `;
 
 function changeName() {
-  const newName = prompt("Enter your new name:");
-  if (newName) {
-    alert(`Name changed to ${newName}!`);
-    // You can later add real profile name changing here
-  }
+  const changeNameOption = document.getElementById('changeNameOption');
+
+  changeNameOption.innerHTML = `
+    <div id="nameChangeBox" style="
+      display: flex; 
+      flex-direction: column; 
+      gap: 12px; 
+      margin-top: 12px; 
+      animation: slideDown 0.4s ease forwards;
+    ">
+      <input id="nameInput" 
+        type="text" 
+        placeholder="Enter new name..." 
+        style="
+          padding: 12px 20px; 
+          border-radius: 25px; 
+          border: 2px solid #6d28d9; 
+          background: #1f1f1f; 
+          color: #f9fafb;
+          font-size: 16px;
+          outline: none;
+          transition: border 0.3s ease;
+        "
+        onfocus="this.style.borderColor='#8b5cf6';"
+        onblur="this.style.borderColor='#6d28d9';"
+      />
+
+      <div style="display: flex; gap: 10px;">
+        <button onclick="submitName()" 
+          style="
+            flex: 1;
+            background: linear-gradient(135deg, #6d28d9, #8b5cf6); 
+            color: white; 
+            border: none; 
+            border-radius: 20px; 
+            padding: 10px 0;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+          "
+          onmouseover="this.style.background='linear-gradient(135deg, #8b5cf6, #6d28d9)';"
+          onmouseout="this.style.background='linear-gradient(135deg, #6d28d9, #8b5cf6)';"
+        >Save</button>
+
+        <button onclick="cancelNameEdit()" 
+          style="
+            flex: 1;
+            background: #ef4444; 
+            color: white; 
+            border: none; 
+            border-radius: 20px; 
+            padding: 10px 0;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+          "
+          onmouseover="this.style.background='#dc2626';"
+          onmouseout="this.style.background='#ef4444';"
+        >Cancel</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('nameInput').focus();
 }
+
+
+
+function submitName() {
+  const input = document.getElementById('nameInput');
+  const newName = input.value.trim();
+  
+  if (!newName) {
+    showToast('Please enter a valid name.', true); // Error toast
+    return;
+  }
+
+  // Save the name somewhere (optional)
+
+  showToast(`Name changed to: ${newName}`);
+  cancelNameEdit();
+}
+function showToast(message, isError = false) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.style.background = isError ? '#ef4444' : '#22c55e'; // Red if error, Green if success
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateY(0)';
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(20px)';
+  }, 2500); // Hide after 2.5 seconds
+}
+
+
+function cancelNameEdit() {
+  const wrapper = document.getElementById('changeNameOption');
+  wrapper.innerHTML = `<div class="setting-option" onclick="changeName()">✏️ Change Name</div>`;
+}
+function submitName() {
+  const input = document.getElementById('nameInput');
+  const newName = input.value.trim();
+  
+  if (!newName) {
+    alert('Please enter a valid name.');
+    return;
+  }
+
+  // Save the name (optional: store it somewhere, update UI, etc.)
+  alert(`Name changed to: ${newName}`);
+
+  // Go back to original button
+  cancelNameEdit();
+}
+
+function cancelNameEdit() {
+  const changeNameOption = document.getElementById('changeNameOption');
+  changeNameOption.innerHTML = `
+    <div class="setting-option" onclick="changeName()">✏️ Change Name</div>
+  `;
+}
+
 
 function updateProfilePicture() {
   const newPic = prompt("Paste the URL of your new profile picture:");
@@ -603,10 +737,15 @@ emojiSearch.addEventListener('input', (e) => {
   loadEmojis(e.target.value);
 });
 
+
     /* JavaScript END */
+
+    
 
 
     
   </script>
+  
 </body>
 </html>
+
