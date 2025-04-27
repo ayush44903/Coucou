@@ -23,7 +23,13 @@ app.use(session({
 }));
 
 // Serve static files from public directory
-app.use(express.static('public'));
+
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/public/index.html');
+});
+// app.use(express.static('public'));
+app.use(express.static(__dirname + '/public'));
+
 
 // Track connected users with their names
 const connectedUsers = new Map();
@@ -431,15 +437,6 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-const HOST = '0.0.0.0';  // Allow connections from all network interfaces
-
-http.listen(PORT, HOST, () => {
-    console.log(`Server running on ${HOST}:${PORT}`);
+http.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
-
-
-
-
-
-
-
