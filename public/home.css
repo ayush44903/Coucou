@@ -130,7 +130,7 @@ body{
     display:flex;
     justify-content :space-between;
     align-items: center;
-padding: 60px 50px;
+    padding: 20px 50px;
 }
 .text-container{
     max-width: 600px;
@@ -211,7 +211,14 @@ padding: 60px 50px;
 }
 
 .image-content img{
-    max-width:900px;
-    height: auto;
-    margin-top:-100px;
+  position: relative;
+  max-width: 685px;
+  height: auto;
+  margin-top: -115px;
+  right: -70px;
+}
+.title{
+    font-size: 3rem;
+    font-weight: 600;
+    margin-bottom: 20px;
 }
