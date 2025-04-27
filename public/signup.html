@@ -7,58 +7,135 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
-      background: #e6e6fa; /* Light background for a clean look */
+      background: linear-gradient(135deg, #e6e6fa, #d9d9d9); /* Gradient background */
       height: 100vh;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
       font-family: 'Inter', sans-serif;
+      overflow: hidden;
     }
-    .portal-glow {
-      animation: pulseGlow 4s infinite;
+    .card {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      margin-left: 5%;
+      z-index: 2;
     }
-    @keyframes pulseGlow {
-      0%, 100% {
-        box-shadow: 0 0 20px 5px #D9D9D9, 0 0 40px 10px #c14545;
+    .card h1 {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      color: #4f46e5;
+    }
+    .card p {
+      font-size: 1rem;
+      color: #555;
+      margin-bottom: 2rem;
+    }
+    .card button {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 9999px;
+      transition: all 0.3s ease-in-out;
+    }
+    .card button:hover {
+      transform: scale(1.05);
+    }
+    .login-btn {
+      background-color: #6b46c1;
+      color: white;
+      margin-bottom: 1rem;
+    }
+    .signup-btn {
+      background-color: #4299e1;
+      color: white;
+      margin-bottom: 1rem;
+    }
+    .guest-btn {
+      background-color: #48bb78;
+      color: white;
+    }
+    .chat-animation {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .chat-bubble {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 50px;
+      padding: 1rem 2rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      animation: float 6s infinite ease-in-out;
+    }
+    .chat-bubble:nth-child(1) {
+      top: 10%;
+      left: 20%;
+      animation-delay: 0s;
+    }
+    .chat-bubble:nth-child(2) {
+      top: 30%;
+      left: 50%;
+      animation-delay: 2s;
+    }
+    .chat-bubble:nth-child(3) {
+      top: 60%;
+      left: 70%;
+      animation-delay: 4s;
+    }
+    @keyframes float {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
       }
       50% {
-        box-shadow: 0 0 30px 10px #d9d9d9, 0 0 60px 20px #c14545;
+        transform: translateY(-20px) scale(1.1);
+        opacity: 0.8;
       }
+      100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+    }
+    .right-image {
+      width: 40%;
+      height: auto;
+      margin-right: 5%;
+      z-index: 2;
     }
   </style>
 </head>
 <body class="text-gray-800">
 
-  <div class="flex flex-col md:flex-row items-center space-y-8 md:space-y-0 md:space-x-16">
-    <!-- Left Section: Circle with Buttons -->
-    <div class="relative flex items-center justify-center">
-      <div class="w-64 h-64 rounded-full border-4 border-purple-500 flex items-center justify-center portal-glow bg-gradient-to-r from-purple-500 to-blue-500">
-        <div class="flex flex-col space-y-4">
-          <button class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-full transition">Login</button>
-          <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition">Sign Up</button>
-          <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-full transition">Join as Guest</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Right Section: Heading and Description -->
-    <div class="text-left">
-      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-        Own your identity,<br>not just your username.
-      </h1>
-      <p class="mt-4 text-gray-600 text-lg">
-        Log in or sign up to explore a world of private connections.
-      </p>
-      <div class="mt-6 flex space-x-4">
-        <button class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-full transition">
-          Start Chatting
-        </button>
-        <button class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-full transition">
-          Create Room
-        </button>
-      </div>
-    </div>
+  <!-- Chat Animation -->
+  <div class="chat-animation">
+    <div class="chat-bubble">Hello!</div>
+    <div class="chat-bubble">Welcome to Coucou!</div>
+    <div class="chat-bubble">Let's get started!</div>
   </div>
+
+  <!-- Signup Card -->
+  <div class="card">
+    <h1>Welcome to Coucou</h1>
+    <p>Join us and be part of an amazing community. Choose how you'd like to proceed:</p>
+    <button class="login-btn hover:bg-purple-700">Login</button>
+    <button class="signup-btn hover:bg-blue-700">Sign Up</button>
+    <button class="guest-btn hover:bg-green-700">Join as Guest</button>
+  </div>
+
+  <!-- Right Image -->
+  <img src="https://via.placeholder.com/500" alt="Signup Illustration" class="right-image">
 
 </body>
 </html>
