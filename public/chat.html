@@ -214,6 +214,26 @@
       display: none;
     }
 
+
+    .setting-option {
+      background: linear-gradient(135deg, #d8b4fe, #c084fc);
+      color: white;
+      padding: 15px 20px;
+      margin-bottom: 15px;
+      border-radius: 30px;
+      text-align: center;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: background 0.3s, transform 0.2s;
+    }
+    
+    .setting-option:hover {
+      background: linear-gradient(135deg, #c084fc, #a855f7);
+      transform: scale(1.05);
+    }
+    
+
     /* Dark Mode Classes */
     body.dark {
       background-color: #1f2937;
@@ -334,9 +354,89 @@
       </div>
     </div>
   </div>
+  
 
   <script>
     /* JavaScript START */
+    const menuItems = document.querySelectorAll(".menu-item");
+const friendsList = document.querySelector(".friends-list");
+const groupsList = document.createElement('div');
+const settingsPage = document.createElement('div');
+
+// Create Groups Section
+groupsList.classList.add('friends-list'); // Reuse same style
+groupsList.style.display = 'none';
+groupsList.innerHTML = `
+  <h3 style="margin-bottom: 20px;">Groups</h3>
+  <div class="friend" onclick="openChat('Satyanash Mandi', 'minions.webp', true)">
+    <img src="minions.webp" class="avatar">
+    <div class="friend-info">
+      <p class="name">Satyanash Mandi</p>
+      <p class="message">4 members • New updates!</p>
+    </div>
+  </div>
+  <div class="friend" onclick="openChat('Baba Ji Ki Buti', 'disney.webp', true)">
+    <img src="disney.webp" class="avatar">
+    <div class="friend-info">
+      <p class="name">Baba Ji Ki Buti</p>
+      <p class="message">5 members • Standup today!</p>
+    </div>
+  </div>
+  <div class="friend" onclick="openChat('Papa kai Pare', 'penguin.webp', true)">
+    <img src="penguin.webp" class="avatar">
+    <div class="friend-info">
+      <p class="name">Papa kai Pare</p>
+      <p class="message">3 members • New Campaign 🚀</p>
+    </div>
+  </div>
+`;
+
+// Create Settings Page
+settingsPage.classList.add('friends-list'); // Reuse same style
+settingsPage.style.display = 'none';
+settingsPage.innerHTML = `
+  <h3 style="margin-bottom: 20px;">Settings</h3>
+  <div class="setting-option" onclick="toggleDarkMode()">🌗 Toggle Theme</div>
+`;
+function changeName() {
+  const newName = prompt("Enter your new name:");
+  if (newName) {
+    alert(`Name changed to ${newName}!`);
+    // You can later add real profile name changing here
+  }
+}
+
+function updateProfilePicture() {
+  const newPic = prompt("Paste the URL of your new profile picture:");
+  if (newPic) {
+    alert("Profile picture updated!");
+    // You can later set it to avatar if you want
+  }
+}
+
+// Insert after friendsList
+friendsList.parentNode.insertBefore(groupsList, friendsList.nextSibling);
+friendsList.parentNode.insertBefore(settingsPage, groupsList.nextSibling);
+
+// Sidebar Clicks
+menuItems[0].addEventListener('click', () => {
+  friendsList.style.display = 'flex';
+  groupsList.style.display = 'none';
+  settingsPage.style.display = 'none';
+});
+
+menuItems[1].addEventListener('click', () => {
+  friendsList.style.display = 'none';
+  groupsList.style.display = 'flex';
+  settingsPage.style.display = 'none';
+});
+
+menuItems[2].addEventListener('click', () => {
+  friendsList.style.display = 'none';
+  groupsList.style.display = 'none';
+  settingsPage.style.display = 'flex';
+});
+
     function openChat(friendName, avatarUrl, isOnline) {
       const chatBox = document.getElementById("chatBox");
       const chatFriendName = document.getElementById("chatFriendName");
@@ -462,6 +562,9 @@ emojiSearch.addEventListener('input', (e) => {
 });
 
     /* JavaScript END */
+
+
+    
   </script>
 </body>
 </html>
