@@ -136,8 +136,10 @@ body{
     padding: 20px 50px;
 }
 .text-container{
+    transform: scale(1.2);
     max-width: 600px;
     margin-left: 50px;
+    margin-top: 200px;
 }
 .text-container p{
     font-size:5 rem;
