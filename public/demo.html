@@ -1,261 +1,358 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Coucou</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Login – Coucou</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+        rel="stylesheet"/>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f7f9;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+    /* ——— Theme Variables ——— */
+    :root {
+      --bg: #f4f7f9;
+      --panel-bg: #fff;
+      --text: #333;
+      --subtext: #555;
+      --accent: #7a5af8;
+      --accent-light: rgba(122,90,248,0.3);
+      --input-bg: #fff;
+      --input-border: #e2e8f0;
+      --error: #e53e3e;
+    }
+    .dark {
+      --bg: #1e1e2a;
+      --panel-bg: #2a2a3c;
+      --text: #f4f4f8;
+      --subtext: #bbb;
+      --accent: #9d7cff;
+      --accent-light: rgba(157,124,255,0.3);
+      --input-bg: #3a3a4d;
+      --input-border: #555;
+      --error: #ff6b6b;
     }
 
-    .main-container {
-      background: white;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
       display: flex;
+      height: 100vh;
+      align-items: center;
+      justify-content: center;
+      transition: background .3s, color .3s;
+    }
+    .main-container {
       width: 850px;
-      height: 550px;
+      max-width: 95%;
+      min-height: 550px; /* instead of fixed height */
+      display: flex;
+      flex-direction: row;
       border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); /* More depth with shadow */
-      transition: all 0.3s ease-in-out;
+      background: var(--panel-bg);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+      transition: background .3s, box-shadow .3s, transform .3s;
     }
-
+    
     .main-container:hover {
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2); /* Enhanced hover shadow */
-      transform: translateY(-5px); /* Slight lifting effect */
+      transform: translateY(-5px);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.15);
     }
 
+    /* ——— Left: Floating BG & Illustration ——— */
     .illustration-container {
-      flex: 1;
-      background-color: #ebf8ff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      flex:1;
+      background: linear-gradient(135deg,var(--accent-light),var(--bg));
+      position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
     }
-
+    .shape {
+      position: absolute; border-radius: 50%;
+      background: var(--accent-light);
+      animation: float 8s ease-in-out infinite;
+    }
+    .shape:nth-child(1){width:200px;height:200px;top:10%;left:5%;animation-duration:10s;}
+    .shape:nth-child(2){width:150px;height:150px;bottom:15%;right:10%;animation-duration:12s;animation-direction:reverse;}
+    @keyframes float {0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-20px)}}
     .illustration-container img {
-      width: 90%;
-      height: auto;
-      border-radius: 15px; /* Soft rounded edges for the image */
+      position: relative; width:80%;max-width:400px;border-radius:15px;
+      animation: float 6s infinite ease-in-out;
     }
 
+    /* ——— Right: Form & Controls ——— */
     .form-container {
-      flex: 1;
-      padding: 40px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      border-radius: 20px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      background-color: #fff;
+      flex:1; padding:40px; display:flex;flex-direction:column;
+      justify-content:center; background:var(--panel-bg);
+      transition: background .3s;
     }
+    .top-bar {
+      display:flex;justify-content:flex-end; margin-bottom:20px;
+    }
+    .theme-toggle {
+      width:36px; height:36px; border-radius:50%; border:none;
+      background:var(--accent); color:#fff; cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      transition: background .3s;
+    }
+    .theme-toggle:hover { background:var(--accent-light); }
+    .theme-toggle svg { width:20px;height:20px; }
 
     h1 {
-      text-align: center;
-      color: #2d3748;
-      margin-bottom: 2rem;
-      font-size: 28px;
-      font-weight: 600;
+      font-size:28px; font-weight:600; text-align:center;
+      margin-bottom:1rem; color:var(--text);
     }
-
     .auth-tabs {
-      display: flex;
-      margin-bottom: 1rem;
-      border-bottom: 2px solid #e2e8f0;
+      display:flex; margin-bottom:1.5rem; border-bottom:2px solid var(--accent-light);
     }
-
     .auth-tab {
-      flex: 1;
-      text-align: center;
-      padding: 10px 0;
-      font-weight: bold;
-      cursor: pointer;
-      color: #718096;
-      background: none;
-      border: none;
-      outline: none;
-      transition: color 0.3s;
+      flex:1;text-align:center;padding:12px 0;cursor:pointer;
+      font-weight:600;color:var(--accent);
+      background:none;border:none;transition:background .3s,color .3s;
     }
-
     .auth-tab.active {
-      color: #4299e1;
-      border-bottom: 2px solid #4299e1;
+      color:#fff;background:var(--accent);
+      border-top-left-radius:8px;border-top-right-radius:8px;
     }
+    .auth-panel { display:none; }
+    .auth-panel.active { display:block; }
 
-    .auth-panel {
-      display: none;
+    .form-group { margin-bottom:1.25rem; position:relative; }
+    label { display:block;margin-bottom:6px;color:var(--subtext);font-size:14px; }
+    .input-wrapper {
+      position:relative;
     }
+    .input-wrapper input {
+      width:100%; padding:12px 15px 12px 42px;
+      background:var(--input-bg); border:1px solid var(--input-border);
+      border-radius:8px;font-size:16px;transition:border .3s,box-shadow .3s,background .3s;
+      color:var(--text);
+    }
+    .input-wrapper svg {
+      position:absolute;left:12px;top:50%;
+      transform:translateY(-50%);width:20px;height:20px;
+      fill:var(--subtext);transition:fill .3s;
+    }
+    .input-wrapper input:focus {
+      border-color:var(--accent); box-shadow:0 0 6px rgba(122,90,248,0.3);
+      background:var(--panel-bg);
+    }
+    .input-wrapper input:focus + svg { fill:var(--accent); }
 
-    .auth-panel.active {
-      display: block;
+    /* — Password Strength Meter — */
+    .strength-bar {
+      height:6px; border-radius:4px; background:#ddd; overflow:hidden;
+      margin-top:4px; transition:background .3s;
     }
-
-    .form-group {
-      margin-bottom: 1.25rem;
+    .strength-bar div {
+      height:100%; width:0%; background:var(--accent);
+      transition:width .3s;
     }
-
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      color: #4a5568;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      font-size: 16px;
-      transition: all 0.3s ease-in-out;
-    }
-
-    input:focus {
-      border-color: #4299e1;
-      box-shadow: 0 0 5px rgba(66, 153, 225, 0.6);
-    }
+    .strength-text { font-size:12px; color:var(--subtext); margin-top:4px; }
 
     .btn {
-      width: 100%;
-      padding: 12px;
-      margin-top: 1rem;
-      font-size: 16px;
-      color: white;
-      background-color: #4299e1;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s ease-in-out;
+      width:100%;padding:14px;margin-top:0.5rem;
+      font-size:16px;font-weight:600;color:#fff;
+      background:var(--accent);border:none;border-radius:8px;
+      cursor:pointer;transition:transform .3s,box-shadow .3s,background .3s;
+      position:relative;
+    }
+    .btn-secondary { background:#718096; }
+    .btn:hover {
+      background:#6842f3; transform:translateY(-2px);
+      box-shadow:0 6px 12px rgba(106,90,205,0.4);
     }
 
-    .btn:hover {
-      background-color: #3182ce;
-      transform: translateY(-2px); /* 3D hover effect */
+    /* spinner */
+    .btn .spinner {
+      position:absolute; left:50%; top:50%;
+      width:18px;height:18px;margin:-9px 0 0 -9px;
+      border:2px solid rgba(255,255,255,0.6);
+      border-top-color:#fff;border-radius:50%;
+      animation: spin .8s linear infinite;
+      display:none;
     }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     .separator {
-      text-align: center;
-      margin: 20px 0;
-      position: relative;
-      color: #718096;
+      text-align:center;margin:1.5rem 0;color:var(--subtext);
+      position:relative;font-size:14px;
     }
-
-    .separator::before,
-    .separator::after {
-      content: '';
-      height: 1px;
-      width: 40%;
-      background: #ccc;
-      position: absolute;
-      top: 50%;
+    .separator::before,.separator::after{
+      content:'';position:absolute;top:50%;width:40%;height:1px;
+      background:#ccc;
     }
-
-    .separator::before {
-      left: 0;
-    }
-
-    .separator::after {
-      right: 0;
-    }
+    .separator::before{left:0;}
+    .separator::after{right:0;}
 
     .error-message {
-      color: red;
-      text-align: center;
-      margin-bottom: 1rem;
-      padding: 10px;
-      background-color: #fff5f5;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      display:none;background:#fff5f5;color:var(--error);
+      padding:10px;border-radius:8px;margin-bottom:1rem;
+      text-align:center;box-shadow:0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    @media (max-width:900px){
+      .main-container{flex-direction:column;height:auto;}
+      .illustration-container{height:200px;}
+      .illustration-container img{width:60%;}
+      .form-container{padding:20px;}
     }
   </style>
 </head>
 <body>
 
   <div class="main-container">
-    
-    <!-- Illustration Side -->
+    <!-- Left: shapes + illustration -->
     <div class="illustration-container">
-      <img src="images/home.png" alt="Chat Illustration">
+      <div class="shape"></div>
+      <div class="shape"></div>
+      <img src="https://undraw.co/api/illustrations/f4e65b88-47f3-4024-bf5e-7c70d11e29c3"
+           alt="Chat Illustration"/>
     </div>
 
-    <!-- Form Side -->
+    <!-- Right: form -->
     <div class="form-container">
+      <div class="top-bar">
+        <button class="theme-toggle" id="themeToggle">
+          <!-- sun/moon icon -->
+          <svg id="themeIcon" viewBox="0 0 24 24">
+            <path d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364-7.364l-1.414 1.414M6.05 17.95l-1.414 1.414M17.95 17.95l-1.414-1.414M6.05 6.05L4.636 7.464"/>
+            <circle cx="12" cy="12" r="5"/>
+          </svg>
+        </button>
+      </div>
       <h1>Welcome to Coucou</h1>
-
       <div class="auth-tabs">
         <button class="auth-tab active" data-tab="login">Login</button>
         <button class="auth-tab" data-tab="signup">Sign Up</button>
       </div>
 
+      <!-- LOGIN PANEL -->
       <div id="login-panel" class="auth-panel active">
-        <form>
+        <div class="error-message" id="error-message"></div>
+        <form id="login-form">
           <div class="form-group">
-            <label>Email</label>
-            <input type="email" required>
+            <label for="email">Email</label>
+            <div class="input-wrapper">
+              <input id="email" type="email" required/>
+              <svg viewBox="0 0 24 24"><path d="M2 4h20v16H2z" fill="none"/><path d="M4 6l8 5 8-5v12H4z"/></svg>
+            </div>
           </div>
           <div class="form-group">
-            <label>Password</label>
-            <input type="password" required>
+            <label for="password">Password</label>
+            <div class="input-wrapper">
+              <input id="password" type="password" required/>
+              <svg viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 17a2 2 0 0 0 0-4..."/></svg>
+            </div>
           </div>
-          <button type="submit" class="btn">Login</button>
+          <button type="submit" class="btn">
+            <span>Login</span>
+            <div class="spinner"></div>
+          </button>
         </form>
-        
+
         <div class="separator">OR</div>
 
-        <form>
+        <form id="guest-form">
           <div class="form-group">
-            <label>Guest Username</label>
-            <input type="text" placeholder="Enter Guest Username" required>
+            <label for="guest-username">Guest Username</label>
+            <div class="input-wrapper">
+              <input id="guest-username" type="text" placeholder="Your guest name" required/>
+              <svg viewBox="0 0 24 24"><path d="..."/></svg>
+            </div>
           </div>
-          <button type="submit" class="btn" style="background-color: #718096;">Continue as Guest</button>
+          <button type="submit" class="btn btn-secondary">
+            <span>Continue as Guest</span><div class="spinner"></div>
+          </button>
         </form>
       </div>
 
+      <!-- SIGNUP PANEL -->
       <div id="signup-panel" class="auth-panel">
-        <form>
+        <form id="signup-form">
           <div class="form-group">
-            <label>Username</label>
-            <input type="text" required>
+            <label for="signup-username">Username</label>
+            <div class="input-wrapper">
+              <input id="signup-username" type="text" required/>
+              <svg viewBox="0 0 24 24"><path d="..."/></svg>
+            </div>
           </div>
           <div class="form-group">
-            <label>Email</label>
-            <input type="email" required>
+            <label for="signup-email">Email</label>
+            <div class="input-wrapper">
+              <input id="signup-email" type="email" required/>
+              <svg viewBox="0 0 24 24"><path d="..."/></svg>
+            </div>
           </div>
           <div class="form-group">
-            <label>Password</label>
-            <input type="password" required>
+            <label for="signup-password">Password</label>
+            <div class="input-wrapper">
+              <input id="signup-password" type="password" minlength="6" required/>
+              <svg viewBox="0 0 24 24"><path d="..."/></svg>
+            </div>
+            <div class="strength-bar"><div></div></div>
+            <div class="strength-text">Strength: <span id="strengthText">—</span></div>
           </div>
-          <button type="submit" class="btn">Sign Up</button>
+          <button type="submit" class="btn">
+            <span>Sign Up</span><div class="spinner"></div>
+          </button>
         </form>
       </div>
-
     </div>
-
   </div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const tabs = document.querySelectorAll('.auth-tab');
-    const panels = document.querySelectorAll('.auth-panel');
-
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        panels.forEach(p => p.classList.remove('active'));
-
-        tab.classList.add('active');
-        document.getElementById(tab.dataset.tab + '-panel').classList.add('active');
-      });
+  <script>
+    // Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      const icon = document.getElementById('themeIcon');
+      icon.innerHTML = document.body.classList.contains('dark')
+        ? '<path d="M5 12a7 7 0 0 1 14 0..."/>' // moon icon
+        : '<path d="M12 3v2..."/>';            // sun icon
     });
-  });
-</script>
 
+    // Tab switching
+    document.querySelectorAll('.auth-tab').forEach(tab=>{
+      tab.onclick = ()=> {
+        document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
+        document.querySelectorAll('.auth-panel').forEach(p=>p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab+'-panel').classList.add('active');
+      }
+    });
+
+    // Loading spinner on submit
+    document.querySelectorAll('form').forEach(form=>{
+      form.onsubmit = e => {
+        e.preventDefault();
+        const btn = form.querySelector('.btn');
+        btn.querySelector('span').style.opacity = '0';
+        btn.querySelector('.spinner').style.display = 'block';
+        setTimeout(()=>{
+          btn.querySelector('span').style.opacity = '1';
+          btn.querySelector('.spinner').style.display = 'none';
+          alert('Form submitted!');
+        }, 1500);
+      }
+    });
+
+    // Password strength meter
+    const pwInput = document.getElementById('signup-password');
+    const bar = document.querySelector('.strength-bar div');
+    const text = document.getElementById('strengthText');
+    pwInput.addEventListener('input', ()=>{
+      const val = pwInput.value;
+      let score = 0;
+      if (val.length >= 6) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[\W]/.test(val)) score++;
+      const width = (score/4)*100;
+      bar.style.width = width + '%';
+      bar.style.background = score < 2 ? '#e53e3e' : score < 3 ? '#dd6b20' : '#38a169';
+      text.textContent = ['Too Weak','Weak','Fair','Strong'][Math.max(0,score-1)] || '—';
+    });
+  </script>
 </body>
 </html>
