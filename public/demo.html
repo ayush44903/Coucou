@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Coucou</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f7f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .main-container {
+      background: white;
+      display: flex;
+      width: 850px;
+      height: 550px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); /* More depth with shadow */
+      transition: all 0.3s ease-in-out;
+    }
+
+    .main-container:hover {
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2); /* Enhanced hover shadow */
+      transform: translateY(-5px); /* Slight lifting effect */
+    }
+
+    .illustration-container {
+      flex: 1;
+      background-color: #ebf8ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .illustration-container img {
+      width: 90%;
+      height: auto;
+      border-radius: 15px; /* Soft rounded edges for the image */
+    }
+
+    .form-container {
+      flex: 1;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2d3748;
+      margin-bottom: 2rem;
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .auth-tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px 0;
+      font-weight: bold;
+      cursor: pointer;
+      color: #718096;
+      background: none;
+      border: none;
+      outline: none;
+      transition: color 0.3s;
+    }
+
+    .auth-tab.active {
+      color: #4299e1;
+      border-bottom: 2px solid #4299e1;
+    }
+
+    .auth-panel {
+      display: none;
+    }
+
+    .auth-panel.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #4a5568;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s ease-in-out;
+    }
+
+    input:focus {
+      border-color: #4299e1;
+      box-shadow: 0 0 5px rgba(66, 153, 225, 0.6);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 1rem;
+      font-size: 16px;
+      color: white;
+      background-color: #4299e1;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .btn:hover {
+      background-color: #3182ce;
+      transform: translateY(-2px); /* 3D hover effect */
+    }
+
+    .separator {
+      text-align: center;
+      margin: 20px 0;
+      position: relative;
+      color: #718096;
+    }
+
+    .separator::before,
+    .separator::after {
+      content: '';
+      height: 1px;
+      width: 40%;
+      background: #ccc;
+      position: absolute;
+      top: 50%;
+    }
+
+    .separator::before {
+      left: 0;
+    }
+
+    .separator::after {
+      right: 0;
+    }
+
+    .error-message {
+      color: red;
+      text-align: center;
+      margin-bottom: 1rem;
+      padding: 10px;
+      background-color: #fff5f5;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main-container">
+    
+    <!-- Illustration Side -->
+    <div class="illustration-container">
+      <img src="images/home.png" alt="Chat Illustration">
+    </div>
+
+    <!-- Form Side -->
+    <div class="form-container">
+      <h1>Welcome to Coucou</h1>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Login</button>
+        <button class="auth-tab" data-tab="signup">Sign Up</button>
+      </div>
+
+      <div id="login-panel" class="auth-panel active">
+        <form>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" required>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" required>
+          </div>
+          <button type="submit" class="btn">Login</button>
+        </form>
+        
+        <div class="separator">OR</div>
+
+        <form>
+          <div class="form-group">
+            <label>Guest Username</label>
+            <input type="text" placeholder="Enter Guest Username" required>
+          </div>
+          <button type="submit" class="btn" style="background-color: #718096;">Continue as Guest</button>
+        </form>
+      </div>
+
+      <div id="signup-panel" class="auth-panel">
+        <form>
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" required>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" required>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" required>
+          </div>
+          <button type="submit" class="btn">Sign Up</button>
+        </form>
+      </div>
+
+    </div>
+
+  </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabs = document.querySelectorAll('.auth-tab');
+    const panels = document.querySelectorAll('.auth-panel');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab + '-panel').classList.add('active');
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
