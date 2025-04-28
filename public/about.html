@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>About Coucou</title>
+  
   <style>
     /* Global Styles */
     * {
@@ -61,8 +62,8 @@
     background-color:e0f7f4;
     border-radius: 10px;
     font-weight: 600;
-    color: #1f387e;
-    box-shadow: 0 0 0 2px #ffffff;
+    color: #9a1006;
+    box-shadow: 0 0 0 2px #9a1006;
     cursor: pointer;
     overflow: hidden;
     transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
@@ -71,7 +72,7 @@
   .animated-button svg {
     position: absolute;
     width: 24px;
-    fill: #1f387e;
+    fill: #9a1006;
     z-index: 9;
     transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
   }
@@ -91,7 +92,7 @@
     transform: translate(-50%, -50%);
     width: 20px;
     height: 20px;
-    background-color: #c5e5e4;
+    background-color: #9a1006;
     border-radius: 50%;
     opacity: 0;
     transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
@@ -106,7 +107,7 @@
   
   .animated-button:hover {
     box-shadow: 0 0 0 12px transparent;
-    color: #212121;
+    color: #ffffff;
     border-radius: 12px;
   }
   
@@ -123,12 +124,12 @@
   }
   
   .animated-button:hover svg {
-    fill: #1f387e;
+    fill: #ffffff;
   }
   
   .animated-button:active {
     scale: 0.95;
-    box-shadow: 0 0 0 4px greenyellow;
+    box-shadow: 0 0 0 4px #9a1006;
   }
   
   .animated-button:hover .circle {
@@ -137,6 +138,7 @@
     opacity: 1;
   }
   
+
     /* Main Section */
     .main {
       display: flex;
@@ -162,22 +164,70 @@
       max-width: 700px;
       line-height: 1.8;
     }
-    .team-btn {
-      background-color: #d3d3d3;
-      border: none;
-      padding: 0.8rem 2rem;
-      border-radius: 30px;
-      font-weight: 700;
-      font-size: 1.2rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      transition: background-color 0.3s;
-    }
-    .team-btn:hover {
-      background-color: #bbb;
-    }
+    .btn{
+    display: flex;
+    gap:40px;
+    margin-top: 50px;
+    align-items:center;
+    justify-content:column;
+    flex-direction:row;
+
+
+}
+/* .primary-btn,.secondary-btn{
+    padding:15px 20px;
+    border:none ;
+    border-radius:50px ;
+    font-weight: 600;
+    cursor: pointer;
+}
+.primary-btn{
+    background-color: black;
+    color:white;
+}
+.secondary-btn{
+    background-color:black;
+    color:white;
+    border: 2px solid black;
+} */
+/* From Uiverse.io by SujitAdroja */ 
+.btn {
+  color: #9a1006;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 2px solid #9a1006;
+  padding: 10px 20px;
+  font-size: 17px;
+  cursor: pointer;
+  font-weight: bold;
+  background: transparent;
+  position: relative;
+  transition: all 1s;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.btn:hover {
+  color: #e6e6fa;
+}
+
+.btn::before {
+  content: "";
+  position: absolute;
+  height: 100%;
+  width: 0%;
+  top: 0;
+  left: -40px;
+  transform: skewX(45deg);
+  background-color: #9a1006;
+  z-index: -1;
+  transition: all 1s;
+}
+
+.btn:hover::before {
+  width: 160%;
+}
+
 
     /* Image Section */
     .image-section {
@@ -251,7 +301,7 @@
         We’re building a messaging platform where your data stays yours, your identity belongs to you, 
         and your conversations are 100% private. No ads, no surveillance, no shady middlemen.
       </p>
-      <button class="team-btn">
+      <button class="btn">
         Meet The Team ➔
       </button>
     </div>
