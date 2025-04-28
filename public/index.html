@@ -138,10 +138,9 @@
     </div>
 
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-    <!-- Firebase SDK -->
+
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <!-- Import chat.js -->
     <script src="chat.js"></script>
     <script>
         // Firebase configuration
@@ -201,8 +200,7 @@
         function initializeChat(user) {
             const socketURL = window.location.hostname === 'localhost' 
                 ? 'http://localhost:3000' 
-                : 'https://socketexample-production.up.railway.app';
-            
+                : 'https://your-production-url.com';
             const socket = io(socketURL, {
                 transports: ['websocket', 'polling'],
                 reconnectionAttempts: 5,
@@ -469,3 +467,4 @@
     </script>
 </body>
 </html>
+

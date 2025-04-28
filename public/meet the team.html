@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meet the Team - Coucou</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: #e6e6fa; /* Light background for a clean look */
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .team-card {
+      perspective: 1000px;
+      transition: transform 0.3s ease-in-out;
+    }
+    .team-card:hover {
+      transform: scale(1.05); /* Slightly increase size on hover */
+    }
+    .team-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.8s;
+      transform-style: preserve-3d;
+    }
+    .team-card:hover .team-card-inner {
+      transform: rotateY(180deg);
+    }
+    .team-card-front, .team-card-back {
+      backface-visibility: hidden;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .team-card-front {
+      background: #d9d9d9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .team-card-front img {
+      width: 10rem; /* Increased image size */
+      height: 10rem; /* Increased image size */
+      border-radius: 0; /* Keep the image square */
+      margin-bottom: 0.5rem; /* Reduced margin below the image */
+    }
+    .team-card-front h2 {
+      font-size: 1.5rem; /* Increased font size */
+      font-weight: bold;
+    }
+    .team-card-back {
+      background: #d9d9d9; /* Indigo background for the back */
+      color: black;
+      transform: rotateY(180deg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .team-card-back a {
+      margin: 0.5rem;
+      color: black;
+      text-decoration: none;
+      font-size: 1.2rem;
+    }
+    .team-card-back a:hover {
+      text-decoration: underline;
+    }
+    .think-genz {
+      text-align: center;
+      font-size: 2rem; /* Increased font size */
+      font-weight: bold; /* Made text bold */
+      margin: 5rem 0; /* Added spacing above and below */
+    }
+    footer {
+      text-align: center;
+      font-size: 1rem;
+      padding: 1rem;
+      background: #e6e6fa; /* Same as page background */
+    }
+    .join-now-btn {
+      background-color: #d9d9d9; /* Default color */
+      color: #333; /* Text color */
+      font-weight: bold;
+      padding: 0.5rem 1.5rem;
+      border-radius: 9999px; /* Fully rounded */
+      transition: all 0.3s ease-in-out; /* Smooth animation */
+    }
+    .join-now-btn:hover {
+      background-color: #bfbfbf; /* Slightly darker on hover */
+      transform: scale(1.1); /* Slightly enlarge on hover */
+    }
+    .navbar-links {
+      display: flex;
+      align-items: center;
+      gap: 1rem; /* Add spacing between links and button */
+    }
+  </style>
+</head>
+<body class="text-gray-800">
+
+  <!-- Navbar -->
+  <header class="flex justify-between items-center px-8 py-4" style="background: #e6e6fa;">
+    <div class="text-xl font-bold">logo</div>
+    <div class="navbar-links">
+      <nav class="flex space-x-6">
+        <a href="#" class="text-gray-600 hover:text-gray-900 font-bold">Home</a>
+        <a href="#" class="text-gray-600 hover:text-gray-900 font-bold">About us</a>
+      </nav>
+      <button class="join-now-btn">
+        Join now
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow max-w-full mx-auto px-4 py-12">
+    <h1 class="text-5xl font-bold text-center mb-12">Meet the Dreamers Behind the Screens.</h1>
+    <div class="grid grid-cols-4 gap-8">
+      <!-- Team Member 1 -->
+      <div class="team-card w-full h-64">
+        <div class="team-card-inner">
+          <!-- Front Side -->
+          <div class="team-card-front">
+            <img src="images/ayushh.webp" alt="Ayush">
+            <h2>Ayush</h2>
+          </div>
+          <!-- Back Side -->
+          <div class="team-card-back">
+            <h2 class="text-lg font-bold mb-2">Ayush</h2>
+            <a href="https://linkedin.com/in/ayush" target="_blank">LinkedIn</a>
+            <a href="https://instagram.com/ayush" target="_blank">Instagram</a>
+          </div>
+        </div>
+      </div>
+      <!-- Team Member 2 -->
+      <div class="team-card w-full h-64">
+        <div class="team-card-inner">
+          <!-- Front Side -->
+          <div class="team-card-front">
+            <img src="images/apran.jpg" alt="Apran">
+            <h2>Apran</h2>
+          </div>
+          <!-- Back Side -->
+          <div class="team-card-back">
+            <h2 class="text-lg font-bold mb-2">Apran</h2>
+            <a href="https://linkedin.com/in/apran" target="_blank">LinkedIn</a>
+            <a href="https://instagram.com/apran" target="_blank">Instagram</a>
+          </div>
+        </div>
+      </div>
+      <!-- Team Member 3 -->
+      <div class="team-card w-full h-64">
+        <div class="team-card-inner">
+          <!-- Front Side -->
+          <div class="team-card-front">
+            <img src="https://via.placeholder.com/150" alt="Ashita">
+            <h2>Ashita</h2>
+          </div>
+          <!-- Back Side -->
+          <div class="team-card-back">
+            <h2 class="text-lg font-bold mb-2">Ashita</h2>
+            <a href="https://linkedin.com/in/ashita" target="_blank">LinkedIn</a>
+            <a href="https://instagram.com/ashita" target="_blank">Instagram</a>
+          </div>
+        </div>
+      </div>
+      <!-- Team Member 4 -->
+      <div class="team-card w-full h-64">
+        <div class="team-card-inner">
+          <!-- Front Side -->
+          <div class="team-card-front">
+            <img src="images/aniket.jpg" alt="Aniket">
+            <h2>Aniket</h2>
+          </div>
+          <!-- Back Side -->
+          <div class="team-card-back">
+            <h2 class="text-lg font-bold mb-2">Aniket</h2>
+            <a href="https://linkedin.com/in/aniket" target="_blank">LinkedIn</a>
+            <a href="https://instagram.com/aniket" target="_blank">Instagram</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Think Gen Z Section -->
+    <div class="think-genz">
+      Think Gen Z, code Gen Next
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    © 2025 Coucou. All rights reserved.
+  </footer>
+
+</body>
+</html>
