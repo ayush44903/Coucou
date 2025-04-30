@@ -1,0 +1,13 @@
+name: Hello world
+
+#Trigger this workflow on every push
+
+on:
+  push:
+
+jobs:
+  say-hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Hello
+        run: echo "Welcome to Coucou! ~@"

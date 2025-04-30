@@ -423,22 +423,22 @@ groupsList.classList.add('friends-list'); // Reuse same style
 groupsList.style.display = 'none';
 groupsList.innerHTML = `
   <h3 style="margin-bottom: 20px;">Groups</h3>
-  <div class="friend" onclick="openChat('Satyanash Mandi', 'minions.webp', true)">
-    <img src="minions.webp" class="avatar">
+  <div class="friend" onclick="openChat('Satyanash Mandi', 'images/minions.webp', true)">
+    <img src="images/minions.webp" class="avatar">
     <div class="friend-info">
       <p class="name">Satyanash Mandi</p>
       <p class="message">4 members • New updates!</p>
     </div>
   </div>
-  <div class="friend" onclick="openChat('Baba Ji Ki Buti', 'disney.webp', true)">
-    <img src="disney.webp" class="avatar">
+  <div class="friend" onclick="openChat('Baba Ji Ki Buti', 'images/disney.webp', true)">
+    <img src="images/disney.webp" class="avatar">
     <div class="friend-info">
       <p class="name">Baba Ji Ki Buti</p>
       <p class="message">5 members • Standup today!</p>
     </div>
   </div>
-  <div class="friend" onclick="openChat('Papa kai Pare', 'penguin.webp', true)">
-    <img src="penguin.webp" class="avatar">
+  <div class="friend" onclick="openChat('Papa kai Pare', 'images/penguin.webp', true)">
+    <img src="iamges/penguin.webp" class="avatar">
     <div class="friend-info">
       <p class="name">Papa kai Pare</p>
       <p class="message">3 members • New Campaign 🚀</p>
@@ -746,6 +746,10 @@ emojiSearch.addEventListener('input', (e) => {
     
   </script>
   
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="chat-integration.js"></script>
 </body>
 </html>
-

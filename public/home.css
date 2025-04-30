@@ -23,6 +23,7 @@ body{
     font-size: 1.2rem;
 }
 .navbar nav{
+  z-index: 1000;
     display:flex;
     gap:20px;
     align-items: center;
