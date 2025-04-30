@@ -10,4 +10,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Print Hello
-        run: echo "Welcome to Coucou! ~@
+        run: echo "Welcome to Coucou! ~@"
